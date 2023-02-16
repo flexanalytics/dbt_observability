@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: columns
+    meta:
+      label: Columns
+    columns:
+      - name: command_invocation_id
+        description: ''
+        meta:
+          label: Command Invocation Id
+      - name: node_id
+        description: ''
+        meta:
+          label: Node Id
+      - name: column_name
+        description: ''
+        meta:
+          label: Column Name
+      - name: data_type
+        description: ''
+        meta:
+          label: Data Type
+      - name: tags
+        description: ''
+        meta:
+          label: Tags
+      - name: meta
+        description: ''
+        meta:
+          label: Meta
