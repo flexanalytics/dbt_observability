@@ -29,3 +29,7 @@ models:
         description: ''
         meta:
           label: Meta
+      - name: description
+        description: ''
+        meta:
+          label: Description

@@ -34,7 +34,8 @@ packages:
 3. Add an on-run-end hook to your `dbt_project.yml`: `on-run-end: "{{ dbt_observability.upload_results(results) }}"`
 (We recommend adding a conditional here so that the upload only occurs in your production environment, such as `on-run-end: "{% if target.name == 'prod' %}{{ dbt_observability.upload_results(results) }}{% endif %}"`)
 
-4. If you are using [selectors](https://docs.getdbt.com/reference/node-selection/syntax), be sure to include the `dbt_observability` models in your dbt invocation step.
+4. If you are using [selectors](https://docs.getdbt.com/reference/node-selection/syntax), be sure to include the `dbt_observability` models in your dbt invocation step, for example:
+`dbt build --select some_model dbt_observability`
 
 5. Run your project!
 

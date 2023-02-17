@@ -35,11 +35,15 @@
 
         {% for model in models -%}
 
-            {%- set rowcount_query %}
-            select count(*) as model_rowcount from {{ model.schema }}.{{ model.name }}
-            {%- endset -%}
-            {%- set results = run_query(rowcount_query) -%}
-            {%- set model_rowcount = results.columns[0].values()[0] -%}
+            {% if model.config.materialized == "ephemeral" %}
+                {%- set model_rowcount = 0 -%}
+            {% else %}
+                {%- set rowcount_query %}
+                select count(*) as model_rowcount from {{ model.schema }}.{{ model.name }}
+                {%- endset -%}
+                {%- set results = run_query(rowcount_query) -%}
+                {%- set model_rowcount = results.columns[0].values()[0] -%}
+            {% endif %}
 
             (
                 '{{ invocation_id }}', {# command_invocation_id #}
@@ -55,6 +59,7 @@
                 '{{ model.config.materialized }}', {# materialization #}
                 '{{ tojson(model.tags) }}', {# tags #}
                 '{{ tojson(model.config.meta) }}', {# meta #}
+                '{{ null if model.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(model.description) }}', {# description #}
                 {{ model_rowcount }} {# total rowcount #}
             )
             {%- if not loop.last %},{%- endif %}
@@ -70,6 +75,17 @@
     {% if models != [] %}
         {% set model_values %}
             {% for model in models -%}
+
+                {% if model.config.materialized == "ephemeral" %}
+                    {%- set model_rowcount = 0 -%}
+                {% else %}
+                    {%- set rowcount_query %}
+                    select count(*) as model_rowcount from {{ model.schema }}.{{ model.name }}
+                    {%- endset -%}
+                    {%- set results = run_query(rowcount_query) -%}
+                    {%- set model_rowcount = results.columns[0].values()[0] -%}
+                {% endif %}
+
                 (
                     '{{ invocation_id }}', {# command_invocation_id #}
                     '{{ model.unique_id }}', {# node_id #}
@@ -83,7 +99,9 @@
                     '{{ model.checksum.checksum }}', {# checksum #}
                     '{{ model.config.materialized }}', {# materialization #}
                     {{ tojson(model.tags) }}, {# tags #}
-                    parse_json('{{ tojson(model.config.meta) }}') {# meta #}
+                    parse_json('{{ tojson(model.config.meta) }}'), {# meta #}
+                    '{{ null if model.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(model.description) }}', {# description #}
+                    {{ model_rowcount }} {# total rowcount #}
                 )
                 {%- if not loop.last %},{%- endif %}
             {%- endfor %}

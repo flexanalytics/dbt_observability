@@ -59,7 +59,7 @@
 {% endmacro %}
 
 {% macro redshift__type_string() %}
-   varchar(256)
+   varchar(max)
 {% endmacro %}
 
 {#- TIMESTAMP -#}

@@ -1,6 +1,6 @@
 {% macro upload_columns(graph) -%}
     {% set models = [] %}
-    {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "model") | selectattr("package_name", "equalto", project_name) %}
+    {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "model") | selectattr("package_name", "equalto", project_name) | rejectattr("config.materialized", "equalto", "ephemeral") %}
         {% do models.append(node) %}
     {% endfor %}
     {{ return(adapter.dispatch('get_columns_dml_sql', 'dbt_observability')(models)) }}
@@ -52,38 +52,40 @@
             {% set relation = dbt_observability.get_relation( model.name ) %}
             {%- set columns = adapter.get_columns_in_relation(relation) -%}
 
-            {% if target.schema == model.schema %}
+            {% if target.schema == model.schema and model.config.meta.observe %}
 
-            {%- set col_query -%}
-            select
-                count(1) as row_count
-                {% for column in columns %}
-                , count(distinct {{ column.name }}) as {{ column.name }}_distinct
-                , count(1) - count({{ column.name }}) as {{ column.name }}_null
-                {% if column.is_number() %}
-                , min({{ column.name }}) as {{ column.name }}_min
-                , max({{ column.name }}) as {{ column.name }}_max
-                , avg({{ column.name }}) as {{ column.name }}_avg
-                , sum({{ column.name }}) as {{ column.name }}_sum
-                {% if target.type == 'sqlserver' %}
-                , stdev({{ column.name }}) as {{ column.name }}_stdev
-                {% else %}
-                , stddev({{ column.name }}) as {{ column.name }}_stdev
-                {% endif %}
-                {% else %}
-                , null as {{ column.name }}_min
-                , null as {{ column.name }}_max
-                , null as {{ column.name }}_avg
-                , null as {{ column.name }}_sum
-                , null as {{ column.name }}_stdev
-                {% endif %}
-                {% endfor %}
-            from {{relation}}
-            {%- endset -%}
-            {%- set results = run_query(col_query) -%}
+                {%- set col_query -%}
+                select
+                    count(1) as row_count
+                    {% for column in columns %}
+                    , count(distinct {{ column.name }}) as {{ column.name }}_distinct
+                    , count(1) - count({{ column.name }}) as {{ column.name }}_null
+                    {% if column.is_number() %}
+                    , min({{ column.name }}) as {{ column.name }}_min
+                    , max({{ column.name }}) as {{ column.name }}_max
+                    , avg({{ column.name }}) as {{ column.name }}_avg
+                    , sum({{ column.name }}) as {{ column.name }}_sum
+                    {% if target.type == 'sqlserver' %}
+                    , stdev({{ column.name }}) as {{ column.name }}_stdev
+                    {% else %}
+                    , stddev({{ column.name }}) as {{ column.name }}_stdev
+                    {% endif %}
+                    {% else %}
+                    , null as {{ column.name }}_min
+                    , null as {{ column.name }}_max
+                    , null as {{ column.name }}_avg
+                    , null as {{ column.name }}_sum
+                    , null as {{ column.name }}_stdev
+                    {% endif %}
+                    {% endfor %}
+                from {{relation}}
+                {%- endset -%}
+                {%- set results = run_query(col_query) -%}
 
             {% else %}
-            {%- set results = none -%}
+
+                {%- set results = none -%}
+                
             {% endif %}
 
             {% for column in columns %}
