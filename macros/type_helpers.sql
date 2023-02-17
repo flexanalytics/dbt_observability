@@ -26,6 +26,10 @@
    JSON
 {% endmacro %}
 
+{% macro redshift__type_json() %}
+   varchar(max)
+{% endmacro %}
+
 {#- ARRAY -#}
 
 {% macro type_array() %}
@@ -44,19 +48,21 @@
    ARRAY<string>
 {% endmacro %}
 
-{#- Redshift -#}
+{% macro redshift__type_array() %}
+   varchar(max)
+{% endmacro %}
+
+{#- STRING -#}
+
+{% macro type_string() %}
+    {{ return(adapter.dispatch('type_string', 'dbt_observability')()) }}
+{% endmacro %}
 
 {% macro redshift__type_string() %}
    varchar(256)
 {% endmacro %}
 
-{% macro redshift__type_json() %}
-   varchar(max)
-{% endmacro %}
-
-{% macro redshift__type_array() %}
-   varchar(max)
-{% endmacro %}
+{#- TIMESTAMP -#}
 
 {% macro sqlserver__type_timestamp() %}
    datetime

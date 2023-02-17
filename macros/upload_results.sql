@@ -18,6 +18,17 @@
 
     {% if execute %}
 
+        {% do log("Uploading invocations", true) %}
+        {% set invocations = dbt_observability.get_relation('invocations') %}
+        {% set content_invocations = dbt_observability.upload_invocations() %}
+        {{ dbt_observability.insert_into_metadata_table(
+            database_name=invocations.database,
+            schema_name=invocations.schema,
+            table_name=invocations.identifier,
+            content=content_invocations
+            )
+        }}
+
         {% if results != [] %}
 
             {% do log("Uploading all executions", true) %}
@@ -32,6 +43,28 @@
             }}
 
         {% endif %}
+
+        {% do log("Uploading models", true) %}
+        {% set models = dbt_observability.get_relation('models') %}
+        {% set content_models = dbt_observability.upload_models(graph) %}
+        {{ dbt_observability.insert_into_metadata_table(
+            database_name=models.database,
+            schema_name=models.schema,
+            table_name=models.identifier,
+            content=content_models
+            )
+        }}
+
+        {% do log("Uploading model columns", true) %}
+        {% set models = dbt_observability.get_relation('columns') %}
+        {% set content_columns = dbt_observability.upload_columns(graph) %}
+        {{ dbt_observability.insert_into_metadata_table(
+            database_name=models.database,
+            schema_name=models.schema,
+            table_name=models.identifier,
+            content=content_columns
+            )
+        }}
 
         {% do log("Uploading exposures", true) %}
         {% set exposures = dbt_observability.get_relation('exposures') %}
@@ -66,28 +99,6 @@
             )
         }}
 
-        {% do log("Uploading models", true) %}
-        {% set models = dbt_observability.get_relation('models') %}
-        {% set content_models = dbt_observability.upload_models(graph) %}
-        {{ dbt_observability.insert_into_metadata_table(
-            database_name=models.database,
-            schema_name=models.schema,
-            table_name=models.identifier,
-            content=content_models
-            )
-        }}
-
-        {% do log("Uploading model columns", true) %}
-        {% set models = dbt_observability.get_relation('columns') %}
-        {% set content_columns = dbt_observability.upload_columns(graph) %}
-        {{ dbt_observability.insert_into_metadata_table(
-            database_name=models.database,
-            schema_name=models.schema,
-            table_name=models.identifier,
-            content=content_columns
-            )
-        }}
-
         {% do log("Uploading sources", true) %}
         {% set sources = dbt_observability.get_relation('sources') %}
         {% set content_sources = dbt_observability.upload_sources(graph) %}
@@ -107,17 +118,6 @@
             schema_name=snapshots.schema,
             table_name=snapshots.identifier,
             content=content_snapshots
-            )
-        }}
-
-        {% do log("Uploading invocations", true) %}
-        {% set invocations = dbt_observability.get_relation('invocations') %}
-        {% set content_invocations = dbt_observability.upload_invocations() %}
-        {{ dbt_observability.insert_into_metadata_table(
-            database_name=invocations.database,
-            schema_name=invocations.schema,
-            table_name=invocations.identifier,
-            content=content_invocations
             )
         }}
 

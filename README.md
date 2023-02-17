@@ -1,7 +1,24 @@
 # dbt Observability Package
-This package builds a data mart of tables that track dbt projects.
 
-The package currently supports Redshift, BigQuery, Databricks, Spark, Snowflake, Postgres, and MS SQL Server adapters.
+This dbt package builds a data mart of tables that track dbt projects, run/build history, and a history of table and columns. 
+
+Based on [dbt_artifacts](https://github.com/brooklyn-data/dbt_artifacts), this project differs in a few key ways:
+* Adds a `columns.sql` model to track model column details (column_name, data_type, meta, and more)
+* Maintains a history of column metrics (rowcount, distinct, nulls, min, max, avg, sum, stdev) for anomaly detection and data catalogs
+* Maintains a history of schema changes
+* Computes model rowcount for anomaly detection and data catalogs
+* Adds support for Redshift, Postgres, Oracle, MySQL, MariaDB and MS SQL Server
+* Brings all resource types (models, seeds, exposures, tests, snapshots, sources) into one unified `all_executions.sql` model
+* Cleans up redundant tables and views, minimizing duplicate logic and data
+* Does not observe this package
+
+Also similar to [dbt-data-reliability](https://github.com/elementary-data/dbt-data-reliability), `dbt-observability` differs in a few key ways:
+* `dbt-observability` requires nearly zero configuration, with no model configurations required
+* `dbt-observability` is meant less for testing and more for observing. We found the capabilities of `dbt-data-reliability` to be robust for a use case that needs very specific things, but in practice the constant failing of packages due to anomaly and schema issues was too much. There are ways to configure around this, but our use case has simpler needs.
+* `dbt-observability` stores a history of table and column metrics and schema changes in one table, rather than individual tables for each, making analytic capabilities more robust
+* `dbt-observability` supports more database adapters
+
+The package currently supports BigQuery, Databricks, Spark, Snowflake, Redshift, Postgres, Oracle, MySQL, MariaDB and MS SQL Server adapters.
 
 ## Quickstart
 
@@ -77,4 +94,7 @@ vars:
 ```
 
 ## Acknowledgements
-This package is based on [dbt_artifacts](https://github.com/brooklyn-data/dbt_artifacts). Thanks to [Brooklyn Data Co.](https://brooklyndata.co/) for all the hard work put into the initial versions of this project.
+
+This package is based on [dbt_artifacts](https://github.com/brooklyn-data/dbt_artifacts). Thanks to [Brooklyn Data Co.](https://brooklyndata.co/) for all the hard work put into the initial versions of this project. Thank you to Tails.com for initial development and maintenance of this package. On 2021/12/20, the repository was transferred from the Tails.com GitHub organization to Brooklyn Data Co. The macros in the early versions package were adapted from code shared by Kevin Chan and Jonathan Talmi of Snaptravel.
+
+Thank you for sharing your work with the community!
