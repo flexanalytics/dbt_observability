@@ -28,7 +28,8 @@
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(11) }},
             {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(12)) }},
             {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(13)) }},
-            {{ adapter.dispatch('column_identifier', 'dbt_observability')(14) }}
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(14) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(15) }}
         from values
 
         {% endif %}

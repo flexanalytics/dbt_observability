@@ -62,6 +62,10 @@
    varchar(max)
 {% endmacro %}
 
+{% macro snowflake__type_string() %}
+   varchar(16777216)
+{% endmacro %}
+
 {#- TIMESTAMP -#}
 
 {% macro sqlserver__type_timestamp() %}
