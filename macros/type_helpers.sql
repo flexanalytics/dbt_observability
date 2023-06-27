@@ -58,6 +58,18 @@
     {{ return(adapter.dispatch('type_string', 'dbt_observability')()) }}
 {% endmacro %}
 
+{% macro default__type_string() %}
+   varchar(65535)
+{% endmacro %}
+
+{% macro postgres__type_string() %}
+   text
+{% endmacro %}
+
+{% macro bigquery__type_string() %}
+   string
+{% endmacro %}
+
 {% macro redshift__type_string() %}
    varchar(max)
 {% endmacro %}

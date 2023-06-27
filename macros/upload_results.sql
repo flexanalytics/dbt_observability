@@ -16,7 +16,7 @@
 
 {% macro upload_results(results) -%}
 
-    {% if execute and flags.WHICH != "generate" %}
+    {% if execute and var('dbt_observability:enabled', false) and flags.WHICH not in ['generate','serve','test'] %}
 
         {% do log("Uploading invocations", true) %}
         {% set invocations = dbt_observability.get_relation('invocations') %}
