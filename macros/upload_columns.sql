@@ -152,23 +152,20 @@
                         , max({{ column.name }}) as "{{ column.name }}_max"
                         , avg({{ column.name }}) as "{{ column.name }}_avg"
                         , sum({{ column.name }}) as "{{ column.name }}_sum"
-                        {% if target.type == 'sqlserver' %}
-                        , stdev({{ column.name }}) as "{{ column.name }}_stdev"
-                        {% else %}
-                        , stddev({{ column.name }}) as "{{ column.name }}_stdev"
-                        {% endif %}
-                        , null as "{{ column.name }}_values"
+                        , {{ dbt_observability.stddev() }}({{ column.name }}) as "{{ column.name }}_stdev"
                         {% else %}
                         , null as "{{ column.name }}_min"
                         , null as "{{ column.name }}_max"
                         , null as "{{ column.name }}_avg"
                         , null as "{{ column.name }}_sum"
                         , null as "{{ column.name }}_stdev"
-                        {% if target.type == 'postgres' %}
-                        , case when count(distinct {{ column.name }}) <= {{ valsMax }} then string_agg(distinct {{ column.name }}, ', ') end as "{{ column.name }}_values"
-                        {% else %}
-                        , case when count(distinct {{ column.name }}) <= {{ valsMax }} then listagg(distinct {{ column.name }}, ', ') end as "{{ column.name }}_values"
                         {% endif %}
+                        {% endfor %}
+                        {% for column in columns %}
+                        {% if column.is_string() %}
+                        , {{ dbt.listagg("distinct "~column.name, "', '", "order by "~column.name, valsMax) }} as "{{ column.name }}_values"
+                        {% else %}
+                        , null as "{{ column.name }}_values"
                         {% endif %}
                         {% endfor %}
                     from {{relation}}
@@ -206,7 +203,7 @@
                     , '{{ "Y" if col.name is defined or metric is defined else "N" }}' {# is_documented #}
                     , '{{ "Y" if metric is defined else "N" }}' {# is_metric #}
                     {% set statsCol = statsCols | selectattr('name', 'equalto', column.name) | first  %}
-                    {% if results is none or statsCol is not defined %}
+                    {% if results is none %}
                     , null
                     , null
                     , null
@@ -217,15 +214,15 @@
                     , null
                     , null
                     {% else %}
-                    , {{ results.columns['row_count'].values()[0] or 0 }} {# row_count #}
-                    , {{ results.columns[column.name ~ '_distinct'].values()[0] or 0 }} {# row_distinct #}
-                    , {{ results.columns[column.name ~ '_null'].values()[0] or 0 }} {# row_null #}
-                    , {{ results.columns[column.name ~ '_min'].values()[0] or 0 }} {# row_min #}
-                    , {{ results.columns[column.name ~ '_max'].values()[0] or 0 }} {# row_max #}
-                    , {{ results.columns[column.name ~ '_avg'].values()[0] or 0 }} {# row_avg #}
-                    , {{ results.columns[column.name ~ '_sum'].values()[0] or 0 }} {# row_sum #}
-                    , {{ results.columns[column.name ~ '_stdev'].values()[0] or 0 }} {# row_stdev #}
-                    , {{ results.columns[column.name ~ '_values'].values()[0] or 'null' }} {# row_values #}
+                    , {{ results.columns['row_count'].values()[0] or 'null' }} {# row_count #}
+                    , {{ (results.columns[column.name ~ '_distinct'] and results.columns[column.name ~ '_distinct'].values()[0]) or 'null' }} {# row_distinct #}
+                    , {{ (results.columns[column.name ~ '_null'] and results.columns[column.name ~ '_null'].values()[0]) or 'null' }} {# row_null #}
+                    , {{ (results.columns[column.name ~ '_min'] and results.columns[column.name ~ '_min'].values()[0]) or 'null' }} {# row_min #}
+                    , {{ (results.columns[column.name ~ '_max'] and results.columns[column.name ~ '_max'].values()[0]) or 'null' }} {# row_max #}
+                    , {{ (results.columns[column.name ~ '_avg'] and results.columns[column.name ~ '_avg'].values()[0]) or 'null' }} {# row_avg #}
+                    , {{ (results.columns[column.name ~ '_sum'] and results.columns[column.name ~ '_sum'].values()[0]) or 'null' }} {# row_sum #}
+                    , {{ (results.columns[column.name ~ '_stdev'] and results.columns[column.name ~ '_stdev'].values()[0]) or 'null' }} {# row_stdev #}
+                    , '{{ (results.columns[column.name ~ '_values'] and results.columns[column.name ~ '_values'].values()[0]) or null }}' {# row_values #}
                     {% endif %}
                 )
                 {%- if not loop.last %},{%- endif %}

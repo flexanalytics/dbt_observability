@@ -21,6 +21,6 @@ select
     , cast(null as {{ type_float() }}) as row_avg
     , cast(null as {{ type_float() }}) as row_sum
     , cast(null as {{ type_float() }}) as row_stdev
-    , cast(null as {{ type_array() }}) as column_values
+    , cast(null as {{ type_string() }}) as column_values
 from dummy_cte
 where 1 = 0
