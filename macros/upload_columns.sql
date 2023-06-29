@@ -49,14 +49,12 @@
 
 {% macro is_metric(column, model) %}
 
-    {% set metric = graph.metrics.values() | selectattr('expression'|lower, 'equalto', column.name.lower()) | first %}
-
-    {% if metric is defined %}
+    {% for metric in graph.metrics.values() | selectattr('expression'|lower, 'equalto', column.name.lower()) %}
         {% set mRef = metric.refs | selectattr('name'|lower, 'equalto', model.name.lower()) | first %}
         {% if mRef is defined %}
             {{ return(true) }}
         {% endif %}
-    {% endif %}
+    {% endfor %}
 
     {{ return(false) }}
 
