@@ -47,6 +47,21 @@
     {{ return(none) }}
 {% endmacro %}
 
+{% macro is_metric(column, model) %}
+
+    {% set metric = graph.metrics.values() | selectattr('expression'|lower, 'equalto', column.name.lower()) | first %}
+
+    {% if metric is defined %}
+        {% set mRef = metric.refs | selectattr('name'|lower, 'equalto', model.name.lower()) | first %}
+        {% if mRef is defined %}
+            {{ return(true) }}
+        {% endif %}
+    {% endif %}
+
+    {{ return(false) }}
+
+{% endmacro %}
+
 {% macro default__get_columns_dml_sql(models) -%}
 
     {% if models != [] %}
@@ -109,18 +124,18 @@
 
                 {% for column in columns %}
 
-                    {% set metric = graph.metrics.values() | selectattr('expression'|lower, 'equalto', column.name.lower()) | first %}
+                    {% set isMetric = dbt_observability.is_metric(column, model) %}
 
                     {% if statsType == 'METRIC' %}
 
-                        {% if metric is defined %}
-                            {% do statsCols.append( column ) %}
+                        {% if isMetric %}
+                        {% do statsCols.append( column ) %}
                         {% endif %}
 
                     {% elif statsType == 'DOC' %}
 
                         {% set col = lowerCols.get(column.name.lower()) %}
-                        {% if col.name is defined or metric is defined %}
+                        {% if col.name is defined or isMetric %}
                             {% do statsCols.append( column ) %}
                         {% endif %}
 
@@ -131,16 +146,12 @@
                             {% do statsCols.append( column ) %}
                         {% endif %}
 
-                    {% else %}
-
-                        {% do statsCols.append( column ) %}
-
                     {% endif %}
 
                 {% endfor %}
 
                 {% if(statsCols|length > 0) %}
-                    
+
                     {%- set col_query -%}
                     select
                         count(1) as "row_count"
@@ -162,7 +173,7 @@
                         {% endif %}
                         {% endfor %}
                         {% for column in columns %}
-                        {% if column.is_string() %}
+                        {% if column.is_string() and target.type != 'redshift' %}
                         , {{ dbt.listagg("distinct "~column.name, "', '", "order by "~column.name, valsMax) }} as "{{ column.name }}_values"
                         {% else %}
                         , null as "{{ column.name }}_values"
@@ -186,6 +197,7 @@
 
             {% for column in columns %}
                 {% set metric = graph.metrics.values() | selectattr('expression'|lower, 'equalto', column.name.lower()) | first %}
+                {% set isMetric = dbt_observability.is_metric(column, model) %}
                 {% set col = lowerCols.get(column.name.lower()) %}
                 (
                     '{{ invocation_id }}' {# command_invocation_id #}
@@ -200,30 +212,18 @@
                     , '{{ null if col.meta is not defined else tojson(col.meta) }}' {# meta #}
                     {% endif %}
                     , '{{ null if col.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(col.description) }}' {# description #}
-                    , '{{ "Y" if col.name is defined or metric is defined else "N" }}' {# is_documented #}
-                    , '{{ "Y" if metric is defined else "N" }}' {# is_metric #}
+                    , '{{ "Y" if col.name is defined or isMetric else "N" }}' {# is_documented #}
                     {% set statsCol = statsCols | selectattr('name', 'equalto', column.name) | first  %}
-                    {% if results is none %}
-                    , null
-                    , null
-                    , null
-                    , null
-                    , null
-                    , null
-                    , null
-                    , null
-                    , null
-                    {% else %}
-                    , {{ results.columns['row_count'].values()[0] or 'null' }} {# row_count #}
-                    , {{ (results.columns[column.name ~ '_distinct'] and results.columns[column.name ~ '_distinct'].values()[0]) or 'null' }} {# row_distinct #}
-                    , {{ (results.columns[column.name ~ '_null'] and results.columns[column.name ~ '_null'].values()[0]) or 'null' }} {# row_null #}
-                    , {{ (results.columns[column.name ~ '_min'] and results.columns[column.name ~ '_min'].values()[0]) or 'null' }} {# row_min #}
-                    , {{ (results.columns[column.name ~ '_max'] and results.columns[column.name ~ '_max'].values()[0]) or 'null' }} {# row_max #}
-                    , {{ (results.columns[column.name ~ '_avg'] and results.columns[column.name ~ '_avg'].values()[0]) or 'null' }} {# row_avg #}
-                    , {{ (results.columns[column.name ~ '_sum'] and results.columns[column.name ~ '_sum'].values()[0]) or 'null' }} {# row_sum #}
-                    , {{ (results.columns[column.name ~ '_stdev'] and results.columns[column.name ~ '_stdev'].values()[0]) or 'null' }} {# row_stdev #}
-                    , '{{ (results.columns[column.name ~ '_values'] and results.columns[column.name ~ '_values'].values()[0]) or null }}' {# row_values #}
-                    {% endif %}
+                    , {{ (results and results.columns['row_count'].values()[0]) or 'null' }} {# row_count #}
+                    , {{ (results and results.columns[column.name ~ '_distinct'] and results.columns[column.name ~ '_distinct'].values()[0]) or 'null' }} {# row_distinct #}
+                    , {{ (results and results.columns[column.name ~ '_null'] and results.columns[column.name ~ '_null'].values()[0]) or 'null' }} {# row_null #}
+                    , {{ (results and results.columns[column.name ~ '_min'] and results.columns[column.name ~ '_min'].values()[0]) or 'null' }} {# row_min #}
+                    , {{ (results and results.columns[column.name ~ '_max'] and results.columns[column.name ~ '_max'].values()[0]) or 'null' }} {# row_max #}
+                    , {{ (results and results.columns[column.name ~ '_avg'] and results.columns[column.name ~ '_avg'].values()[0]) or 'null' }} {# row_avg #}
+                    , {{ (results and results.columns[column.name ~ '_sum'] and results.columns[column.name ~ '_sum'].values()[0]) or 'null' }} {# row_sum #}
+                    , {{ (results and results.columns[column.name ~ '_stdev'] and results.columns[column.name ~ '_stdev'].values()[0]) or 'null' }} {# row_stdev #}
+                    , '{{ "Y" if isMetric else "N" }}' {# is_metric #}
+                    , '{{ (results and results.columns[column.name ~ '_values'] and results.columns[column.name ~ '_values'].values()[0]) or null }}' {# column_values #}
                 )
                 {%- if not loop.last %},{%- endif %}
             {% endfor %}

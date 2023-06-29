@@ -12,7 +12,6 @@ select
     , cast(null as {{ type_json() }}) as meta
     , cast(null as {{ type_string() }}) as description
     , cast(null as {{ type_string() }}) as is_documented
-    , cast(null as {{ type_string() }}) as is_metric
     , cast(null as {{ type_int() }}) as row_count
     , cast(null as {{ type_int() }}) as row_distinct
     , cast(null as {{ type_int() }}) as row_null
@@ -21,6 +20,7 @@ select
     , cast(null as {{ type_float() }}) as row_avg
     , cast(null as {{ type_float() }}) as row_sum
     , cast(null as {{ type_float() }}) as row_stdev
+    , cast(null as {{ type_string() }}) as is_metric
     , cast(null as {{ type_string() }}) as column_values
 from dummy_cte
 where 1 = 0
