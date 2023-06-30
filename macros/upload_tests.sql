@@ -22,7 +22,8 @@
             {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(5)) }},
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(6) }},
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(7) }},
-            {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(8)) }}
+            {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(8)) }},
+            {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(9)) }}
         from values
 
         {% endif %}
@@ -36,7 +37,8 @@
                 '{{ tojson(test.depends_on.nodes) }}', {# depends_on_nodes #}
                 '{{ test.package_name }}', {# package_name #}
                 '{{ test.original_file_path | replace('\\', '\\\\') }}', {# test_path #}
-                '{{ tojson(test.tags) }}' {# tags #}
+                '{{ tojson(test.tags) }}', {# tags #}
+                '{{ null if test.test_metadata is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(test.test_metadata)) }}' {# test.test_metadata #}                
             )
             {%- if not loop.last %},{%- endif %}
         {%- endfor %}
@@ -59,7 +61,8 @@
                     {{ tojson(test.depends_on.nodes) }}, {# depends_on_nodes #}
                     '{{ test.package_name }}', {# package_name #}
                     '{{ test.original_file_path | replace('\\', '\\\\') }}', {# test_path #}
-                    {{ tojson(test.tags) }} {# tags #}
+                    {{ tojson(test.tags) }}, {# tags #}
+                    parse_json('{{ tojson(test.test_metadata) }}') {# test_metadata #}
                 )
                 {%- if not loop.last %},{%- endif %}
             {%- endfor %}
