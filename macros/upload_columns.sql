@@ -171,7 +171,9 @@
                         {% endif %}
                         {% endfor %}
                         {% for column in columns %}
-                        {% if column.is_string() and target.type != 'redshift' %}
+                        {% set isMetric = dbt_observability.is_metric(column, model) %}
+                        {% set col = lowerCols.get(column.name.lower()) %}
+                        {% if statsType!='METRIC' and column.is_string() and col.name is defined and not isMetric and target.type != 'redshift' %}
                         , {{ dbt.listagg("distinct "~column.name, "', '", "order by "~column.name, valsMax) }} as "{{ column.name }}_values"
                         {% else %}
                         , null as "{{ column.name }}_values"
