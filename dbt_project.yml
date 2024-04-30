@@ -11,12 +11,16 @@ clean-targets: # folders to be removed by `dbt clean`
 
 models:
   dbt_observability:
-    +materialized: view
+    +materialized: table
     +file_format: delta
     sources:
       +materialized: incremental
       +on_schema_change: append_new_columns
       +full_refresh: false
+    +access: public
+    staging:
+      +schema: staging
+      +materialized: view
 
 dispatch:
   - macro_namespace: dbt

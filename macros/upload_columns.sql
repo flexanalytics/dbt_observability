@@ -48,13 +48,14 @@
 {% endmacro %}
 
 {% macro is_metric(column, model) %}
-
+    {% if not execute %}
     {% for metric in graph.metrics.values() | selectattr('expression'|lower, 'equalto', column.name.lower()) %}
         {% set mRef = metric.refs | selectattr('name'|lower, 'equalto', model.name.lower()) | first %}
         {% if mRef is defined %}
             {{ return(true) }}
         {% endif %}
     {% endfor %}
+    {% endif %}
 
     {{ return(false) }}
 
@@ -186,13 +187,13 @@
                 {% else %}
 
                     {%- set results = none -%}
-                    
+
                 {% endif %}
 
             {% else %}
 
                 {%- set results = none -%}
-                
+
             {% endif %}
 
             {% for column in columns %}
@@ -211,7 +212,7 @@
                     , '{{ null if col.tags is not defined else tojson(col.tags) }}' {# tags #}
                     , '{{ null if col.meta is not defined else tojson(col.meta) }}' {# meta #}
                     {% endif %}
-                    , '{{ null if col.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(col.description) }}' {# description #}
+                    , '{{ null if col.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(col.description)}}' {# description #}
                     , '{{ "Y" if col.name is defined or isMetric else "N" }}' {# is_documented #}
                     {% set statsCol = statsCols | selectattr('name', 'equalto', column.name) | first  %}
                     , {{ (results and results.columns['row_count'].values()[0]) or 'null' }} {# row_count #}

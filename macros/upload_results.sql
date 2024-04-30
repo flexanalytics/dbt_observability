@@ -66,7 +66,7 @@
             )
         }}
 
-        {% do log("Uploading metrics", true) %}
+        {# {% do log("Uploading metrics", true) %}
         {% set metrics = dbt_observability.get_relation('metrics') %}
         {% set content_metrics = dbt_observability.upload_metrics(graph) %}
         {{ dbt_observability.insert_into_metadata_table(
@@ -75,7 +75,7 @@
             table_name=metrics.identifier,
             content=content_metrics
             )
-        }}
+        }} #}
 
         {% do log("Uploading exposures", true) %}
         {% set exposures = dbt_observability.get_relation('exposures') %}
