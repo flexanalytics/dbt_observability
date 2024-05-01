@@ -2,9 +2,15 @@ version: 2
 models:
 - name: dim_column
   description: ''
+  meta:
+    label: Column Dimension
+    display_index: 1
   columns:
   - name: column_key
     description: ''
+    tests:
+    - not_null
+    - unique
   - name: node_id
     description: ''
   - name: column_name

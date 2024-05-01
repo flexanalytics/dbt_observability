@@ -2,9 +2,14 @@ version: 2
 models:
 - name: dim_seed
   description: ''
+  meta:
+    label: Seed Dimension
   columns:
   - name: seed_key
     description: ''
+    tests:
+    - not_null
+    - unique
   - name: node_id
     description: ''
   - name: database_name

@@ -2,9 +2,14 @@ version: 2
 models:
 - name: dim_snapshot
   description: ''
+  meta:
+    label: Snapshot Dimension
   columns:
   - name: snapshot_key
     description: ''
+    tests:
+    - not_null
+    - unique
   - name: node_id
     description: ''
   - name: database_name

@@ -2,9 +2,15 @@ version: 2
 models:
 - name: dim_invocation
   description: ''
+  meta:
+    label: Invocation Dimension
+    display_index: 1
   columns:
   - name: invocation_key
     description: ''
+    tests:
+    - not_null
+    - unique
   - name: dbt_version
     description: ''
   - name: project_name

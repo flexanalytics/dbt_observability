@@ -2,9 +2,14 @@ version: 2
 models:
 - name: dim_source
   description: ''
+  meta:
+    label: Source Dimension
   columns:
   - name: source_key
     description: ''
+    tests:
+    - not_null
+    - unique
   - name: node_id
     description: ''
   - name: database_name

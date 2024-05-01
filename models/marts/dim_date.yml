@@ -2,9 +2,15 @@ version: 2
 models:
 - name: dim_date
   description: ''
+  meta:
+    label: Date Dimension
+    display_index: 1
   columns:
   - name: date_key
     description: ''
+    tests:
+    - not_null
+    - unique
   - name: date_full
     description: ''
   - name: fiscal_year

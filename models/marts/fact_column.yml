@@ -15,6 +15,9 @@ models:
   columns:
   - name: column_key
     description: ''
+    tests:
+    - not_null
+    - unique
   - name: execution_key
     description: ''
   - name: is_documented

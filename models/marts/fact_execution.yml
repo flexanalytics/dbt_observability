@@ -63,6 +63,9 @@ models:
   columns:
   - name: execution_key
     description: ''
+    tests:
+    - not_null
+    - unique
   - name: invocation_key
     description: ''
   - name: model_key

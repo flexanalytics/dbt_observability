@@ -2,9 +2,14 @@ version: 2
 models:
 - name: dim_model
   description: ''
+  meta:
+    label: Model Dimension
   columns:
   - name: model_key
     description: ''
+    tests:
+    - not_null
+    - unique
   - name: node_id
     description: ''
   - name: database_name

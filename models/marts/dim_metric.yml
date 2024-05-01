@@ -2,9 +2,14 @@ version: 2
 models:
 - name: dim_metric
   description: ''
+  meta:
+    label: Metric Dimension
   columns:
   - name: metric_key
     description: ''
+    tests:
+    - not_null
+    - unique
   - name: node_id
     description: ''
   - name: name
