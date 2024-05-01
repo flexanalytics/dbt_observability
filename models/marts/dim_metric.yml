@@ -1,0 +1,33 @@
+version: 2
+models:
+- name: dim_metric
+  description: ''
+  columns:
+  - name: metric_key
+    description: ''
+  - name: node_id
+    description: ''
+  - name: name
+    description: ''
+  - name: label
+    description: ''
+  - name: model
+    description: ''
+  - name: expression
+    description: ''
+  - name: calculation_method
+    description: ''
+  - name: filters
+    description: ''
+  - name: time_grains
+    description: ''
+  - name: dimensions
+    description: ''
+  - name: package_name
+    description: ''
+  - name: meta
+    description: ''
+  - name: depends_on_nodes
+    description: ''
+  - name: description
+    description: ''

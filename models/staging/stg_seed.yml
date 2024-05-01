@@ -1,0 +1,23 @@
+version: 2
+models:
+- name: stg_seed
+  description: ''
+  columns:
+  - name: command_invocation_id
+    description: ''
+  - name: node_id
+    description: ''
+  - name: run_started_at
+    description: ''
+  - name: database_name
+    description: ''
+  - name: schema_name
+    description: ''
+  - name: name
+    description: ''
+  - name: package_name
+    description: ''
+  - name: path
+    description: ''
+  - name: checksum
+    description: ''

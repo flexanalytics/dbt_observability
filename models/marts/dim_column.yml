@@ -1,0 +1,19 @@
+version: 2
+models:
+- name: dim_column
+  description: ''
+  columns:
+  - name: column_key
+    description: ''
+  - name: node_id
+    description: ''
+  - name: column_name
+    description: ''
+  - name: data_type
+    description: ''
+  - name: tags
+    description: ''
+  - name: meta
+    description: ''
+  - name: description
+    description: ''

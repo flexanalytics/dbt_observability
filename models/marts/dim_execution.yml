@@ -1,0 +1,19 @@
+version: 2
+models:
+- name: dim_execution
+  description: ''
+  columns:
+  - name: execution_key
+    description: ''
+  - name: node_id
+    description: ''
+  - name: status
+    description: ''
+  - name: materialization
+    description: ''
+  - name: schema_name
+    description: ''
+  - name: name
+    description: ''
+  - name: resource_type
+    description: ''

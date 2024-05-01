@@ -1,0 +1,21 @@
+version: 2
+models:
+- name: dim_seed
+  description: ''
+  columns:
+  - name: seed_key
+    description: ''
+  - name: node_id
+    description: ''
+  - name: database_name
+    description: ''
+  - name: schema_name
+    description: ''
+  - name: name
+    description: ''
+  - name: package_name
+    description: ''
+  - name: path
+    description: ''
+  - name: checksum
+    description: ''

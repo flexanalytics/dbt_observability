@@ -1,38 +1,22 @@
 version: 2
-
 models:
-- name: columns
+- name: fact_column
+  description: ''
   meta:
-    label: Columns
+    label: dbt Column Fact
+    display_index: 1
+    joins:
+      - to: dim_column
+        type: inner
+        join_on:
+          - from_field: column_key
+            exp: '='
+            to_field: column_key
   columns:
-  - name: command_invocation_id
+  - name: column_key
     description: ''
-    meta:
-      label: Command Invocation Id
-  - name: node_id
+  - name: execution_key
     description: ''
-    meta:
-      label: Node Id
-  - name: column_name
-    description: ''
-    meta:
-      label: Column Name
-  - name: data_type
-    description: ''
-    meta:
-      label: Data Type
-  - name: tags
-    description: ''
-    meta:
-      label: Tags
-  - name: meta
-    description: ''
-    meta:
-      label: Meta
-  - name: description
-    description: ''
-    meta:
-      label: Description
   - name: is_documented
     description: ''
   - name: row_count

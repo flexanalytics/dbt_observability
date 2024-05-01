@@ -1,0 +1,25 @@
+version: 2
+models:
+- name: dim_source
+  description: ''
+  columns:
+  - name: source_key
+    description: ''
+  - name: node_id
+    description: ''
+  - name: database_name
+    description: ''
+  - name: schema_name
+    description: ''
+  - name: source_name
+    description: ''
+  - name: loader
+    description: ''
+  - name: name
+    description: ''
+  - name: identifier
+    description: ''
+  - name: loaded_at_field
+    description: ''
+  - name: freshness
+    description: ''

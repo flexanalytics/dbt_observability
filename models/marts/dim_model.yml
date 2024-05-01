@@ -1,0 +1,29 @@
+version: 2
+models:
+- name: dim_model
+  description: ''
+  columns:
+  - name: model_key
+    description: ''
+  - name: node_id
+    description: ''
+  - name: database_name
+    description: ''
+  - name: schema_name
+    description: ''
+  - name: name
+    description: ''
+  - name: package_name
+    description: ''
+  - name: path
+    description: ''
+  - name: checksum
+    description: ''
+  - name: materialization
+    description: ''
+  - name: tags
+    description: ''
+  - name: meta
+    description: ''
+  - name: description
+    description: ''

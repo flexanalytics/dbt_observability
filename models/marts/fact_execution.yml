@@ -1,0 +1,91 @@
+version: 2
+models:
+- name: fact_execution
+  description: ''
+  meta:
+    label: dbt Execution Fact
+    display_index: 1
+    joins:
+      - to: dim_execution
+        type: inner
+        join_on:
+          - from_field: execution_key
+            exp: '='
+            to_field: execution_key
+      - to: dim_invocation
+        type: inner
+        join_on:
+          - from_field: invocation_key
+            exp: '='
+            to_field: invocation_key
+      - to: dim_model
+        type: inner
+        join_on:
+          - from_field: model_key
+            exp: '='
+            to_field: model_key
+      - to: dim_column
+        type: inner
+        join_on:
+          - from_field: column_key
+            exp: '='
+            to_field: column_key
+      - to: dim_test
+        type: inner
+        join_on:
+          - from_field: test_key
+            exp: '='
+            to_field: test_key
+      - to: dim_seed
+        type: inner
+        join_on:
+          - from_field: seed_key
+            exp: '='
+            to_field: seed_key
+      - to: dim_source
+        type: inner
+        join_on:
+          - from_field: source_key
+            exp: '='
+            to_field: source_key
+      - to: dim_snapshot
+        type: inner
+        join_on:
+          - from_field: snapshot_key
+            exp: '='
+            to_field: snapshot_key
+      - to: dim_date
+        type: inner
+        join_on:
+          - from_field: date_key
+            exp: '='
+            to_field: date_key
+  columns:
+  - name: execution_key
+    description: ''
+  - name: invocation_key
+    description: ''
+  - name: model_key
+    description: ''
+  - name: column_key
+    description: ''
+  - name: test_key
+    description: ''
+  - name: seed_key
+    description: ''
+  - name: source_key
+    description: ''
+  - name: snapshot_key
+    description: ''
+  - name: date_key
+    description: ''
+  - name: was_full_refresh
+    description: ''
+  - name: thread_id
+    description: ''
+  - name: compile_started_at
+    description: ''
+  - name: query_completed_at
+    description: ''
+  - name: total_node_runtime
+    description: ''

@@ -1,0 +1,35 @@
+version: 2
+models:
+- name: stg_model
+  description: ''
+  columns:
+  - name: command_invocation_id
+    description: ''
+  - name: node_id
+    description: ''
+  - name: run_started_at
+    description: ''
+  - name: database_name
+    description: ''
+  - name: schema_name
+    description: ''
+  - name: name
+    description: ''
+  - name: depends_on_nodes
+    description: ''
+  - name: package_name
+    description: ''
+  - name: path
+    description: ''
+  - name: checksum
+    description: ''
+  - name: materialization
+    description: ''
+  - name: tags
+    description: ''
+  - name: meta
+    description: ''
+  - name: description
+    description: ''
+  - name: total_rowcount
+    description: ''

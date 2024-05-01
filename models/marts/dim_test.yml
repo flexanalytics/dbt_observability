@@ -1,0 +1,21 @@
+version: 2
+models:
+- name: dim_test
+  description: ''
+  columns:
+  - name: test_key
+    description: ''
+  - name: node_id
+    description: ''
+  - name: name
+    description: ''
+  - name: depends_on_nodes
+    description: ''
+  - name: package_name
+    description: ''
+  - name: test_path
+    description: ''
+  - name: tags
+    description: ''
+  - name: test_metadata
+    description: ''

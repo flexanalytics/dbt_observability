@@ -1,0 +1,75 @@
+version: 2
+models:
+- name: stg_date
+  description: ''
+  columns:
+  - name: date_day
+    description: ''
+  - name: prior_date_day
+    description: ''
+  - name: next_date_day
+    description: ''
+  - name: prior_year_date_day
+    description: ''
+  - name: prior_year_over_year_date_day
+    description: ''
+  - name: day_of_week
+    description: ''
+  - name: day_of_week_name
+    description: ''
+  - name: day_of_week_name_short
+    description: ''
+  - name: day_of_month
+    description: ''
+  - name: day_of_year
+    description: ''
+  - name: week_start_date
+    description: ''
+  - name: week_end_date
+    description: ''
+  - name: prior_year_week_start_date
+    description: ''
+  - name: prior_year_week_end_date
+    description: ''
+  - name: week_of_year
+    description: ''
+  - name: iso_week_start_date
+    description: ''
+  - name: iso_week_end_date
+    description: ''
+  - name: prior_year_iso_week_start_date
+    description: ''
+  - name: prior_year_iso_week_end_date
+    description: ''
+  - name: iso_week_of_year
+    description: ''
+  - name: prior_year_week_of_year
+    description: ''
+  - name: prior_year_iso_week_of_year
+    description: ''
+  - name: month_of_year
+    description: ''
+  - name: month_name
+    description: ''
+  - name: month_name_short
+    description: ''
+  - name: month_start_date
+    description: ''
+  - name: month_end_date
+    description: ''
+  - name: prior_year_month_start_date
+    description: ''
+  - name: prior_year_month_end_date
+    description: ''
+  - name: quarter_of_year
+    description: ''
+  - name: quarter_start_date
+    description: ''
+  - name: quarter_end_date
+    description: ''
+  - name: year_number
+    description: ''
+  - name: year_start_date
+    description: ''
+  - name: year_end_date
+    description: ''

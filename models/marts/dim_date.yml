@@ -1,0 +1,43 @@
+version: 2
+models:
+- name: dim_date
+  description: ''
+  columns:
+  - name: date_key
+    description: ''
+  - name: date_full
+    description: ''
+  - name: fiscal_year
+    description: ''
+  - name: fiscal_quarter
+    description: ''
+  - name: fiscal_month
+    description: ''
+  - name: fiscal_month_name
+    description: ''
+  - name: fiscal_month_abbrev
+    description: ''
+  - name: calendar_year
+    description: ''
+  - name: calendar_quarter
+    description: ''
+  - name: calendar_month_nbr
+    description: ''
+  - name: calendar_month_name
+    description: ''
+  - name: calendar_month_abbrev
+    description: ''
+  - name: calendar_week_of_year
+    description: ''
+  - name: calendar_day_of_year
+    description: ''
+  - name: day_of_month
+    description: ''
+  - name: day_of_week
+    description: ''
+  - name: day_of_week_abbrev
+    description: ''
+  - name: month_day_num
+    description: ''
+  - name: month_day_desc
+    description: ''

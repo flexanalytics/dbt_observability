@@ -1,0 +1,23 @@
+version: 2
+models:
+- name: stg_test
+  description: ''
+  columns:
+  - name: command_invocation_id
+    description: ''
+  - name: node_id
+    description: ''
+  - name: run_started_at
+    description: ''
+  - name: name
+    description: ''
+  - name: depends_on_nodes
+    description: ''
+  - name: package_name
+    description: ''
+  - name: test_path
+    description: ''
+  - name: tags
+    description: ''
+  - name: test_metadata
+    description: ''
