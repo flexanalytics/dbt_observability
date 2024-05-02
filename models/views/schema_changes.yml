@@ -1,0 +1,20 @@
+version: 2
+models:
+- name: schema_changes
+  description: ''
+  meta:
+    label: Schema Changes
+    display_index: 1
+  columns:
+  - name: node_id
+    description: ''
+  - name: change
+    description: ''
+  - name: column_name
+    description: ''
+  - name: data_type
+    description: ''
+  - name: pre_data_type
+    description: ''
+  - name: detected_at
+    description: ''
