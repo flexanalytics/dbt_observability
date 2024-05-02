@@ -29,7 +29,7 @@ models:
         join_on:
           - from_field: column_key
             exp: '='
-            to_field: column_key
+            to_field: execution_key
       - to: dim_test
         type: inner
         join_on:
