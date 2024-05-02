@@ -38,7 +38,11 @@ with
     ),
 
     final as (
-        select model.*, case when untested_models.model_key is null then 1 else 0 end as is_tested from model left join untested_models on model.model_key = untested_models.model_key
+        select
+            model.*,
+            case when untested_models.model_key is null then 1 else 0 end as is_tested
+        from model
+        left outer join untested_models on model.model_key = untested_models.model_key
     )
 
 select * from final

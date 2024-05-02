@@ -93,4 +93,4 @@ with
 
     )
 
-select * from all_column_changes
+select distinct * from all_column_changes
