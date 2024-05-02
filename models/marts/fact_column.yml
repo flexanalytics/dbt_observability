@@ -12,6 +12,12 @@ models:
           - from_field: column_key
             exp: '='
             to_field: column_key
+      - to: dim_execution
+        type: inner
+        join_on:
+          - from_field: execution_key
+            exp: '='
+            to_field: execution_key
   columns:
   - name: column_key
     description: ''

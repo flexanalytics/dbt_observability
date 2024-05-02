@@ -24,12 +24,6 @@ models:
           - from_field: model_key
             exp: '='
             to_field: model_key
-      - to: dim_column
-        type: inner
-        join_on:
-          - from_field: column_key
-            exp: '='
-            to_field: execution_key
       - to: dim_test
         type: inner
         join_on:
