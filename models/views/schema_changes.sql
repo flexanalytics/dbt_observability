@@ -50,10 +50,10 @@ with
             cur.data_type,
             NULL as pre_data_type,
             cur.run_started_at as detected_at
-        from pre inner join cur
+        from cur left join pre
             on (lower(cur.node_id) = lower(pre.node_id) and lower(cur.column_name) = lower(pre.column_name))
                 and pre.run_started_at = cur.previous_run_started_at
-        where pre.node_id is NULL
+        where pre.column_name is NULL
     ),
 
     columns_removed as (
