@@ -23,6 +23,7 @@ with
 
 select
     {{ dbt_utils.generate_surrogate_key(['command_invocation_id']) }} as invocation_key,
+    command_invocation_id,
     dbt_version,
     project_name,
     dbt_command,
