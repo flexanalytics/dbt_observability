@@ -2,29 +2,61 @@ version: 2
 models:
 - name: dim_execution
   description: ''
+  config:
+    contract:
+      enforced: true
   meta:
     label: Execution Dimension
-    display_index: 1
   columns:
   - name: execution_key
     description: ''
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
+      - type: unique
+      - type: primary_key
+        warn_unenforced: false
     tests:
     - not_null
     - unique
   - name: resource_type
     description: ''
+    data_type: text
+    meta:
+      label: Resource Type
   - name: project
     description: ''
+    data_type: text
+    meta:
+      label: Project
   - name: resource_name
     description: ''
-    description: ''
+    data_type: text
+    meta:
+      label: Resource Name
   - name: status
     description: ''
+    data_type: text
+    meta:
+      label: Status
   - name: materialization
     description: ''
+    data_type: text
+    meta:
+      label: Materialization
   - name: schema_name
     description: ''
+    data_type: text
+    meta:
+      label: Schema Name
   - name: name
     description: ''
+    data_type: text
+    meta:
+      label: Name
   - name: resource_type
     description: ''
+    data_type: text
+    meta:
+      label: Resource Type
