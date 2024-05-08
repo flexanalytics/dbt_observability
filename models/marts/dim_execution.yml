@@ -10,6 +10,7 @@ models:
   columns:
   - name: execution_key
     description: ''
+    data_type: text
     meta:
       hidden: true
     constraints:

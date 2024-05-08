@@ -10,6 +10,7 @@ models:
   columns:
   - name: date_key
     description: ''
+    data_type: text
     meta:
       label: date_key
       hidden: true
