@@ -18,3 +18,9 @@ models:
     description: ''
   - name: detected_at
     description: ''
+    meta:
+      label: Run Started At
+      hidden: false
+      format:
+        type: date
+        pattern: YYYY-MM-DD HH:mm:ss

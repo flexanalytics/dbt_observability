@@ -76,13 +76,33 @@ models:
     description: ''
   - name: date_key
     description: ''
+  - name: run_started_at
+    description: ''
+    meta:
+      label: Run Started At
+      hidden: false
+      format:
+        type: date
+        pattern: YYYY-MM-DD HH:mm:ss
   - name: was_full_refresh
     description: ''
   - name: thread_id
     description: ''
   - name: compile_started_at
     description: ''
+    meta:
+      label: Run Started At
+      hidden: false
+      format:
+        type: date
+        pattern: YYYY-MM-DD HH:mm:ss
   - name: query_completed_at
     description: ''
+    meta:
+      label: Run Started At
+      hidden: false
+      format:
+        type: date
+        pattern: YYYY-MM-DD HH:mm:ss
   - name: total_node_runtime
     description: ''
