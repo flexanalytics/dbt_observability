@@ -8,6 +8,8 @@ models:
   columns:
   - name: date_key
     description: ''
+    meta:
+      hidden: true
     tests:
     - not_null
     - unique

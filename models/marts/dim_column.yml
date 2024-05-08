@@ -1,25 +1,64 @@
 version: 2
 models:
 - name: dim_column
-  description: ''
+  description: "{{ doc('dim_column')}}"
+  config:
+    contract:
+      enforced: true
   meta:
     label: Column Dimension
-    display_index: 1
   columns:
   - name: column_key
+    data_type: text
     description: ''
     tests:
     - not_null
     - unique
-  - name: node_id
+    meta:
+      label: column_key
+      hidden: true
+    constraints:
+      - type: not_null
+      - type: unique
+      - type: primary_key
+        warn_unenforced: false
+  - name: resource_type
     description: ''
+    data_type: text
+    meta:
+      label: Resource Type
+  - name: project
+    description: ''
+    data_type: text
+    meta:
+      label: Project
+  - name: resource_name
+    description: ''
+    data_type: text
+    meta:
+      label: Resource Name
   - name: column_name
     description: ''
+    data_type: text
+    meta:
+      label: Column Name
   - name: data_type
     description: ''
+    data_type: text
+    meta:
+      label: Data Type
   - name: tags
     description: ''
+    data_type: text
+    meta:
+      label: Tags
   - name: meta
     description: ''
+    data_type: text
+    meta:
+      label: Meta
   - name: description
     description: ''
+    data_type: text
+    meta:
+      label: Description
