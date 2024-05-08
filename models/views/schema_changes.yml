@@ -21,6 +21,7 @@ models:
     meta:
       label: Detected At
       hidden: false
+      datatype: date
       format:
         type: date
         pattern: YYYY-MM-DD HH:mm:ss
