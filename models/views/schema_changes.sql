@@ -46,6 +46,23 @@ with
     where fsc.first_detected > fsm.first_detected
     ),
 
+    _last_seen_model as (
+    select
+        cols.node_id, max(run_started_at) as first_detected from {{ ref('stg_column') }} as cols
+        inner join _executions as excs on cols.command_invocation_id = excs.command_invocation_id group by cols.node_id
+    ),
+
+    _last_seen_column as (
+        select
+            cols.node_id, cols.column_name, max(run_started_at) as first_detected from {{ ref('stg_column') }} as cols
+        inner join _executions as excs on cols.command_invocation_id = excs.command_invocation_id group by cols.node_id, cols.column_name
+    ),
+
+     _old_columns as (
+    select lsc.node_id, lsc.column_name, lsc.first_detected from _last_seen_column lsc inner join _last_seen_model lsm on lsc.node_id = lsm.node_id
+    where lsc.first_detected < lsm.first_detected
+    ),
+
     type_changes as (
         select
             cur.node_id,
@@ -79,11 +96,9 @@ with
             pre.column_name,
             NULL as data_type,
             pre.data_type as pre_data_type,
-            pre.run_started_at as detected_at
-        from pre left outer join cur
-            on (lower(cur.node_id) = lower(pre.node_id) and lower(cur.column_name) = lower(pre.column_name))
-                and pre.run_started_at = cur.previous_run_started_at
-        where cur.node_id is not NULL and cur.column_name is NULL
+            old_cols.first_detected as detected_at
+        from pre inner join _old_columns old_cols
+            on (lower(old_cols.node_id) = lower(pre.node_id) and lower(old_cols.column_name) = lower(pre.column_name))
 
     ),
 
