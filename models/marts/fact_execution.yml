@@ -81,7 +81,7 @@ models:
     meta:
       label: Run Started At
       hidden: false
-      data_type: date
+      datatype: date
       format:
         type: date
         pattern: YYYY-MM-DD HH:mm:ss
@@ -94,7 +94,7 @@ models:
     meta:
       label: Compile Started At
       hidden: false
-      data_type: date
+      datatype: date
       format:
         type: date
         pattern: YYYY-MM-DD HH:mm:ss
@@ -103,7 +103,7 @@ models:
     meta:
       label: Query Completed At
       hidden: false
-      data_type: date
+      datatype: date
       format:
         type: date
         pattern: YYYY-MM-DD HH:mm:ss
