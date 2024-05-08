@@ -11,7 +11,7 @@ clean-targets: # folders to be removed by `dbt clean`
 
 models:
   dbt_observability:
-    +materialized: table
+    +materialized: view
     +file_format: delta
     +schema: observability
     sources:
