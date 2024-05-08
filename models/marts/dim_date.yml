@@ -4,48 +4,77 @@ models:
   description: ''
   meta:
     label: Date Dimension
-    display_index: 1
   columns:
   - name: date_key
     description: ''
     meta:
+      label: date_key
       hidden: true
     tests:
     - not_null
     - unique
+    constraints:
+    - type: not_null
+    - type: unique
+    - type: primary_key
+      warn_unenforced: false
   - name: date_full
     description: ''
+    data_type: date
+    meta:
+      label: Date Full
+      datatype: date
+      format:
+        type: date
+        pattern: YYYY-MM-DD
   - name: fiscal_year
     description: ''
+    data_type: integer
   - name: fiscal_quarter
     description: ''
+    data_type: integer
   - name: fiscal_month
     description: ''
+    data_type: integer
   - name: fiscal_month_name
     description: ''
+    data_type: text
   - name: fiscal_month_abbrev
     description: ''
+    data_type: text
   - name: calendar_year
     description: ''
+    data_type: integer
   - name: calendar_quarter
     description: ''
+    data_type: integer
   - name: calendar_month_nbr
     description: ''
+    data_type: integer
   - name: calendar_month_name
     description: ''
+    data_type: text
   - name: calendar_month_abbrev
     description: ''
+    data_type: text
   - name: calendar_week_of_year
     description: ''
+    data_type: integer
   - name: calendar_day_of_year
     description: ''
+    data_type: integer
   - name: day_of_month
     description: ''
+    data_type: integer
   - name: day_of_week
     description: ''
+    data_type: integer
   - name: day_of_week_abbrev
     description: ''
+    data_type: text
   - name: month_day_num
     description: ''
+    data_type: text
   - name: month_day_desc
     description: ''
+    data_type: text

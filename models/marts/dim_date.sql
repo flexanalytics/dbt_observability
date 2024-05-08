@@ -4,7 +4,7 @@ with
     )
 
 select
-    {{ dbt_utils.generate_surrogate_key(['DATE_DAY']) }} as date_key,
+    {{ dbt_utils.generate_surrogate_key(['date_day']) }} as date_key,
     date_day as date_full,
     case
         when month_of_year >= 7
@@ -21,21 +21,21 @@ select
             then month_of_year - 6
         else month_of_year + 6
     end as fiscal_month,
-	{{ concat(["CAST(CASE
-			WHEN MONTH_OF_YEAR >= 7
-			THEN MONTH_OF_YEAR - 6
-			ELSE MONTH_OF_YEAR + 6
-		END AS VARCHAR(2))",
+	{{ concat(["cast(case
+			when month_of_year >= 7
+			then month_of_year - 6
+			else month_of_year + 6
+		end as varchar(2))",
 		"cast(' - ' as varchar(3))",
-		"cast(MONTH_NAME as varchar(20))"])
+		"cast(month_name as varchar(20))"])
 	}} as fiscal_month_name,
-	{{ concat(["CAST(CASE
-			WHEN MONTH_OF_YEAR >= 7
-			THEN MONTH_OF_YEAR - 6
-			ELSE MONTH_OF_YEAR + 6
-		END AS VARCHAR(2))",
+	{{ concat(["cast(case
+			when month_of_year >= 7
+			then month_of_year - 6
+			else month_of_year + 6
+		end as varchar(2))",
 		"cast(' - ' as varchar(3))",
-		"cast(MONTH_NAME_SHORT as varchar(20))"])
+		"cast(month_name_short as varchar(20))"])
 	}} as fiscal_month_abbrev,
     year_number as calendar_year,
     quarter_of_year as calendar_quarter,
@@ -47,6 +47,6 @@ select
     day_of_month,
     day_of_week,
     day_of_week_name_short as day_of_week_abbrev,
-    right(cast(date_day as VARCHAR(10)), 5) as month_day_num,
-    {{ concat(["MONTH_NAME_SHORT", "' '", "day_of_month"]) }} as month_day_desc
+    right(cast(date_day as varchar(10)), 5) as month_day_num,
+    {{ concat(["month_name_short", "' '", "day_of_month"]) }} as month_day_desc
 from dt
