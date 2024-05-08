@@ -23,3 +23,5 @@ models:
     description: ''
   - name: resource_type
     description: ''
+  - name: most_recent_run
+    description: ''
