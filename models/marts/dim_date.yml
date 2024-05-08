@@ -2,6 +2,9 @@ version: 2
 models:
 - name: dim_date
   description: ''
+  config:
+    contract:
+      enforced: true
   meta:
     label: Date Dimension
   columns:
