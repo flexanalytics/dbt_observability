@@ -28,62 +28,6 @@ with
         inner join _executions as excs on cols.command_invocation_id = excs.command_invocation_id
     ),
 
-    _first_seen_model as (
-        select
-            cols.node_id,
-            min(run_started_at) as first_detected
-        from {{ ref('stg_column') }} as cols
-        inner join _executions as excs on cols.command_invocation_id = excs.command_invocation_id group by cols.node_id
-    ),
-
-
-    _first_seen_column as (
-        select
-            cols.node_id,
-            cols.column_name,
-            min(run_started_at) as first_detected
-        from {{ ref('stg_column') }} as cols
-        inner join _executions as excs on cols.command_invocation_id = excs.command_invocation_id
-        group by cols.node_id, cols.column_name
-    ),
-
-    _new_columns as (
-        select
-            fsc.node_id,
-            fsc.column_name,
-            fsc.first_detected
-        from _first_seen_column as fsc
-        inner join _first_seen_model as fsm on fsc.node_id = fsm.node_id
-        where fsc.first_detected > fsm.first_detected
-    ),
-
-    _last_seen_model as (
-        select
-            cols.node_id,
-            max(run_started_at) as first_detected
-        from {{ ref('stg_column') }} as cols
-        inner join _executions as excs on cols.command_invocation_id = excs.command_invocation_id group by cols.node_id
-    ),
-
-    _last_seen_column as (
-        select
-            cols.node_id,
-            cols.column_name,
-            max(run_started_at) as first_detected
-        from {{ ref('stg_column') }} as cols
-        inner join _executions as excs on cols.command_invocation_id = excs.command_invocation_id
-        group by cols.node_id, cols.column_name
-    ),
-
-    _old_columns as (
-        select
-            lsc.node_id,
-            lsc.column_name,
-            lsc.first_detected
-        from _last_seen_column as lsc
-        inner join _last_seen_model as lsm on lsc.node_id = lsm.node_id
-        where lsc.first_detected < lsm.first_detected
-    ),
 
 
     type_changes as (
