@@ -6,18 +6,44 @@ models:
     label: Schema Changes
     display_index: 1
   columns:
-  - name: node_id
+  - name: resource_type
     description: ''
+    data_type: text
+    meta:
+      label: Resource Type
+  - name: project
+    description: ''
+    data_type: text
+    meta:
+      label: Project
+  - name: resource_name
+    description: ''
+    data_type: text
+    meta:
+      label: Resource Name
   - name: change
     description: ''
+    data_type: text
+    meta:
+      label: Change
   - name: column_name
     description: ''
+    data_type: text
+    meta:
+      label: Column Name
   - name: data_type
     description: ''
+    data_type: text
+    meta:
+      label: Data Type
   - name: pre_data_type
     description: ''
+    data_type: text
+    meta:
+      label: Pre Data Type
   - name: detected_at
     description: ''
+    data_type: timestamp
     meta:
       label: Detected At
       hidden: false
