@@ -48,6 +48,18 @@ models:
           - from_field: snapshot_key
             exp: '='
             to_field: snapshot_key
+      - to: dim_metric
+        type: inner
+        join_on:
+          - from_field: metric_key
+            exp: '='
+            to_field: metric_key
+      - to: dim_exposure
+        type: inner
+        join_on:
+          - from_field: exposure_key
+            exp: '='
+            to_field: exposure_key
       - to: dim_date
         type: inner
         join_on:
