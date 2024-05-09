@@ -1,7 +1,8 @@
 /* Bigquery won't let us `where` without `from` so we use this workaround */
-with dummy_cte as (
-    select 1 as foo
-)
+with
+    dummy_cte as (
+        select 1 as foo
+    )
 
 select
     cast(null as {{ type_string() }}) as command_invocation_id,
@@ -14,7 +15,7 @@ select
     cast(null as {{ type_string() }}) as name,
     cast(null as {{ type_string() }}) as identifier,
     cast(null as {{ type_string() }}) as loaded_at_field,
-    {% if target.type == 'snowflake'%}
+    {% if target.type == 'snowflake' %}
         cast(null as {{ type_array() }}) as freshness
     {% else %}
         cast(null as {{ type_json() }}) as freshness
