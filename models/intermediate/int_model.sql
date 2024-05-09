@@ -17,4 +17,4 @@ select
     meta,
     description,
     total_rowcount
-from {{ ref('models') }}
+from {{ ref('stg_model') }}

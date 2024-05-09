@@ -12,4 +12,4 @@ select
     path,
     checksum,
     strategy
-from {{ ref('snapshots') }}
+from {{ ref('stg_snapshot') }}
