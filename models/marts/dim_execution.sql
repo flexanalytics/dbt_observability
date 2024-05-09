@@ -25,5 +25,5 @@ select
     executions.status,
     executions.materialization,
     executions.schema_name,
-    case when executions.run_started_at = most_recent.most_recent_run then 1 else 0 end as most_recent_run
+    case when executions.run_started_at = most_recent.most_recent_run then 'Yes' else 'No' end as most_recent_run
 from executions left join most_recent on executions.run_started_at = most_recent.most_recent_run

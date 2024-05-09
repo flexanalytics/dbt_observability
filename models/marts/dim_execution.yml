@@ -51,13 +51,8 @@ models:
     data_type: text
     meta:
       label: Schema Name
-  - name: name
+  - name: most_recent_run
     description: ''
     data_type: text
     meta:
-      label: Name
-  - name: resource_type
-    description: ''
-    data_type: text
-    meta:
-      label: Resource Type
+      label: Most Recent Run
