@@ -7,37 +7,83 @@ models:
   columns:
   - name: metric_key
     description: ''
+    meta:
+      hidden: true
     tests:
     - not_null
     - unique
   - name: resource_type
     description: ''
+    data_type: text
+    meta:
+      label: Resource Type
   - name: project
     description: ''
+    data_type: text
+    meta:
+      label: Project
   - name: resource_name
     description: ''
-    description: ''
+    data_type: text
+    meta:
+      label: Resource Name
   - name: name
     description: ''
+    data_type: text
+    meta:
+      label: Name
   - name: label
     description: ''
+    data_type: text
+    meta:
+      label: Label
   - name: model
     description: ''
+    data_type: text
+    meta:
+      label: Model
   - name: expression
     description: ''
+    data_type: text
+    meta:
+      label: Expression
   - name: calculation_method
     description: ''
+    data_type: text
+    meta:
+      label: Calculation Method
   - name: filters
     description: ''
+    data_type: text
+    meta:
+      label: Filters
   - name: time_grains
     description: ''
+    data_type: text
+    meta:
+      label: Time Grains
   - name: dimensions
     description: ''
+    data_type: text
+    meta:
+      label: Dimensions
   - name: package_name
     description: ''
+    data_type: text
+    meta:
+      label: Package Name
   - name: meta
     description: ''
+    data_type: text
+    meta:
+      label: Meta
   - name: depends_on_nodes
     description: ''
+    data_type: text
+    meta:
+      label: Depends On Nodes
   - name: description
     description: ''
+    data_type: text
+    meta:
+      label: Description

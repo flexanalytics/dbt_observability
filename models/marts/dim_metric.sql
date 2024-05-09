@@ -2,7 +2,7 @@ with
     metrics as (
         select
             command_invocation_id,
-            unique_id as node_id,
+            unique_id as node_id,  -- TODO: split to cols?
             name,
             label,
             model,
