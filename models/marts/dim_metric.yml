@@ -12,21 +12,26 @@ models:
     tests:
     - not_null
     - unique
-  - name: resource_type
+  # - name: resource_type
+  #   description: ''
+  #   data_type: text
+  #   meta:
+  #     label: Resource Type
+  # - name: project
+  #   description: ''
+  #   data_type: text
+  #   meta:
+  #     label: Project
+  # - name: resource_name
+  #   description: ''
+  #   data_type: text
+  #   meta:
+  #     label: Resource Name
+  - name: node_id
     description: ''
     data_type: text
     meta:
-      label: Resource Type
-  - name: project
-    description: ''
-    data_type: text
-    meta:
-      label: Project
-  - name: resource_name
-    description: ''
-    data_type: text
-    meta:
-      label: Resource Name
+      label: Node ID
   - name: name
     description: ''
     data_type: text

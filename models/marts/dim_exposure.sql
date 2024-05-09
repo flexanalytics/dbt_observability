@@ -19,8 +19,11 @@ with
 
 select
     {{ dbt_utils.generate_surrogate_key([
-        'command_invocation_id', 'resource_type', 'project', 'resource_name'
-        ] ) }} as exposure_key,
+        'command_invocation_id',
+        'resource_type',
+        'project',
+        'resource_name'
+    ] ) }} as exposure_key,
     resource_type,
     project,
     resource_name,
