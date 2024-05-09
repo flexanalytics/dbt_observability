@@ -35,7 +35,7 @@ with
     ),
 
     untested_models as (
-        select distinct model.model_key
+        select distinct models.model_key
         from _models as models
         left outer join _tests as test
             on test.depends_on_nodes like models.node_key
