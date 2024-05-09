@@ -2,7 +2,9 @@ with
     snapshots as (
         select
             command_invocation_id,
-            node_id,
+            resource_type,
+            project,
+            resource_name,
             database_name,
             schema_name,
             name,
@@ -11,12 +13,16 @@ with
             path,
             checksum,
             strategy
-        from {{ ref('stg_snapshot') }}
+        from {{ ref('int_snapshot') }}
     )
 
 select
-    {{ dbt_utils.generate_surrogate_key(['command_invocation_id', 'node_id']) }} as snapshot_key,
-    node_id,
+    {{ dbt_utils.generate_surrogate_key([
+        'command_invocation_id',
+        'resource_type',
+        'project',
+        'resource_name',]
+        ) }} as snapshot_key,
     database_name,
     schema_name,
     name,
