@@ -2,7 +2,9 @@ with
     source as (
         select
             command_invocation_id,
-            node_id,
+            resource_type,
+            project,
+            resource_name,
             database_name,
             schema_name,
             source_name,
@@ -11,12 +13,16 @@ with
             identifier,
             loaded_at_field,
             freshness
-        from {{ ref('stg_source') }}
+        from {{ ref('int_source') }}
     )
 
 select
-    {{ dbt_utils.generate_surrogate_key(['command_invocation_id', 'node_id']) }} as source_key,
-    node_id,
+    {{ dbt_utils.generate_surrogate_key([
+        'command_invocation_id',
+        'resource_type',
+        'project',
+        'resource_name'
+    ]) }} as source_key,
     database_name,
     schema_name,
     source_name,
