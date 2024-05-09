@@ -3,7 +3,7 @@ models:
 - name: fact_execution
   description: ''
   meta:
-    label: dbt Execution Fact
+    label: Execution Fact
     display_index: 1
     joins:
       - to: dim_execution
@@ -57,27 +57,69 @@ models:
   columns:
   - name: execution_key
     description: ''
+    meta:
+      hidden: true
     tests:
     - not_null
     - unique
   - name: invocation_key
     description: ''
-  - name: model_key
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
     description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
   - name: column_key
     description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
   - name: test_key
     description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
   - name: seed_key
     description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
   - name: source_key
     description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
   - name: snapshot_key
     description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
   - name: date_key
     description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
   - name: run_started_at
     description: ''
+    data_type: timestamp
     meta:
       label: Run Started At
       hidden: false
@@ -87,8 +129,14 @@ models:
         pattern: YYYY-MM-DD HH:mm:ss
   - name: was_full_refresh
     description: ''
+    data_type: boolean
+    meta:
+      label: Was Full Refresh
   - name: thread_id
     description: ''
+    data_type: integer
+    meta:
+      label: Thread ID
   - name: compile_started_at
     description: ''
     meta:
@@ -109,3 +157,6 @@ models:
         pattern: YYYY-MM-DD HH:mm:ss
   - name: total_node_runtime
     description: ''
+    data_type: numeric
+    meta:
+      label: Total Node Runtime
