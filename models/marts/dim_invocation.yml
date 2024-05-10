@@ -12,6 +12,8 @@ models:
     tests:
     - not_null
     - unique
+  - name: command_invocation_id
+    description: ''
   - name: dbt_version
     description: ''
     data_type: text

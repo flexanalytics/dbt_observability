@@ -159,8 +159,22 @@ models:
       format:
         type: date
         pattern: YYYY-MM-DD HH:mm:ss
+    meta:
+      label: Compile Started At
+      hidden: false
+      datatype: date
+      format:
+        type: date
+        pattern: YYYY-MM-DD HH:mm:ss
   - name: query_completed_at
     description: ''
+    meta:
+      label: Query Completed At
+      hidden: false
+      datatype: date
+      format:
+        type: date
+        pattern: YYYY-MM-DD HH:mm:ss
     meta:
       label: Query Completed At
       hidden: false
