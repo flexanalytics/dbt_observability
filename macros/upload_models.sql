@@ -1,7 +1,11 @@
-{% macro upload_models(graph) -%}
+{% macro upload_models(graph, path=None) -%}
     {% set models = [] %}
     {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "model") | selectattr("package_name", "equalto", project_name) %}
-        {% do models.append(node) %}
+        {% if path and (path + node.name + ".sql") == node.original_file_path %}
+            {% do models.append(node) %}
+        {% elif not path %}
+            {% do models.append(node) %}
+        {% endif %}
     {% endfor %}
     {{ return(adapter.dispatch('get_models_dml_sql', 'dbt_observability')(models)) }}
 {%- endmacro %}
