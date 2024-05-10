@@ -113,10 +113,8 @@ with
             on (lower(cur.node_id) = lower(pre.node_id) and lower(cur.column_name) = lower(pre.column_name))
                 and pre.run_started_at = cur.previous_run_started_at
         where pre.data_type is not null and lower(cur.data_type) != lower(pre.data_type)
-        where pre.data_type is not null and lower(cur.data_type) != lower(pre.data_type)
     ),
 
-    columns_added as (
     columns_added as (
         select
             cur.node_id,
@@ -132,21 +130,11 @@ with
                 and cur.column_name = pre.column_name
                 and cur.previous_run_started_at = pre.run_started_at
         where pre.column_name is null and cur.previous_run_started_at is not null
-            null as pre_data_type,
-            cur.run_started_at as detected_at
-        from cur
-        left outer join
-            pre
-            on cur.node_id = pre.node_id
-                and cur.column_name = pre.column_name
-                and cur.previous_run_started_at = pre.run_started_at
-        where pre.column_name is null and cur.previous_run_started_at is not null
     ),
 
     columns_removed as (
         select
             pre.node_id,
-            cur.node_id as cur_node,
             'column_removed' as change,
             pre.column_name,
             null as data_type,
