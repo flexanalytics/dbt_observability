@@ -27,6 +27,7 @@ with
         from {{ ref('stg_column') }} as cols
         inner join _executions as excs on cols.command_invocation_id = excs.command_invocation_id
     ),
+
     cur_models as (
         select
             mdls.*,
@@ -45,13 +46,60 @@ with
         inner join _executions as excs on mdls.command_invocation_id = excs.command_invocation_id
     ),
 
-    _models as (
+    cur_seeds as (
         select
-            *,
-            lag(run_started_at) over (partition by node_id order by run_started_at) as previous_run_started_at,
-            lead(run_started_at) over (partition by node_id order by run_started_at) as next_run_started_at
-        from {{ ref('stg_model') }}
+            seeds.*,
+            excs.previous_run_started_at,
+            excs.next_run_started_at
+        from {{ ref('stg_seed') }} as seeds
+        inner join _executions as excs on seeds.command_invocation_id = excs.command_invocation_id
     ),
+
+    pre_seeds as (
+        select
+            seeds.*,
+            excs.previous_run_started_at,
+            excs.next_run_started_at
+        from {{ ref('stg_seed') }} as seeds
+        inner join _executions as excs on seeds.command_invocation_id = excs.command_invocation_id
+    ),
+
+    cur_sources as (
+        select
+            sources.*,
+            excs.previous_run_started_at,
+            excs.next_run_started_at
+        from {{ ref('stg_source') }} as sources
+        inner join _executions as excs on sources.command_invocation_id = excs.command_invocation_id
+    ),
+
+    pre_sources as (
+        select
+            sources.*,
+            excs.previous_run_started_at,
+            excs.next_run_started_at
+        from {{ ref('stg_source') }} as sources
+        inner join _executions as excs on sources.command_invocation_id = excs.command_invocation_id
+    ),
+
+    cur_snapshots as (
+        select
+            snaps.*,
+            excs.previous_run_started_at,
+            excs.next_run_started_at
+        from {{ ref('stg_snapshot') }} as snaps
+        inner join _executions as excs on snaps.command_invocation_id = excs.command_invocation_id
+    ),
+
+    pre_snapshots as (
+        select
+            snaps.*,
+            excs.previous_run_started_at,
+            excs.next_run_started_at
+        from {{ ref('stg_snapshot') }} as snaps
+        inner join _executions as excs on snaps.command_invocation_id = excs.command_invocation_id
+    ),
+
 
     type_changes as (
         select
@@ -135,35 +183,104 @@ with
         and pre.next_run_started_at is not null
     ),
 
-    {# models_added as (
+    seeds_added as (
         select
             cur.node_id,
-            'model_added' as change,
+            'seed_added' as change,
             null as column_name,
             null as data_type,
             null as pre_data_type,
             cur.run_started_at as detected_at
-        from _models cur
-            left join _models pre
-            on cur.command_invocation_id = pre.command_invocation_id
-        where
-            (cur.previous_run_started_at < pre.previous_run_started_at or cur.previous_run_started_at is null) and pre.previous_run_started_at is not null
-
+        from cur_seeds cur
+        left outer join
+            pre_seeds pre
+            on cur.node_id = pre.node_id
+                and cur.previous_run_started_at = pre.run_started_at
+        where pre.name is null and cur.previous_run_started_at is not null
     ),
 
-    models_removed as (
+    seeds_removed as (
         select
             pre.node_id,
-            'model_removed' as change,
+            'seed_removed' as change,
             null as column_name,
             null as data_type,
             null as pre_data_type,
-            cur.next_run_started_at as detected_at
-        from _models pre
-			left join _models cur
-			on pre.command_invocation_id = cur.command_invocation_id
-		where pre.previous_run_started_at is null and pre.next_run_started_at > cur.next_run_started_at
-    ), #}
+            pre.next_run_started_at as detected_at
+        from pre_seeds pre
+        left outer join
+            cur_seeds cur
+            on pre.node_id = cur.node_id
+                and pre.next_run_started_at = cur.run_started_at
+        where cur.name is null
+        and pre.next_run_started_at is not null
+    ),
+
+    sources_added as (
+        select
+            cur.node_id,
+            'source_added' as change,
+            null as column_name,
+            null as data_type,
+            null as pre_data_type,
+            cur.run_started_at as detected_at
+        from cur_sources cur
+        left outer join
+            pre_sources pre
+            on cur.node_id = pre.node_id
+                and cur.previous_run_started_at = pre.run_started_at
+        where pre.name is null and cur.previous_run_started_at is not null
+    ),
+
+    sources_removed as (
+        select
+            pre.node_id,
+            'source_removed' as change,
+            null as column_name,
+            null as data_type,
+            null as pre_data_type,
+            pre.next_run_started_at as detected_at
+        from pre_sources pre
+        left outer join
+            cur_sources cur
+            on pre.node_id = cur.node_id
+                and pre.next_run_started_at = cur.run_started_at
+        where cur.name is null
+        and pre.next_run_started_at is not null
+    ),
+
+    snapshots_added as (
+        select
+            cur.node_id,
+            'snapshot_added' as change,
+            null as column_name,
+            null as data_type,
+            null as pre_data_type,
+            cur.run_started_at as detected_at
+        from cur_snapshots cur
+        left outer join
+            pre_snapshots pre
+            on cur.node_id = pre.node_id
+                and cur.previous_run_started_at = pre.run_started_at
+        where pre.name is null and cur.previous_run_started_at is not null
+    ),
+
+    snapshots_removed as (
+        select
+            pre.node_id,
+            'snapshot_removed' as change,
+            null as column_name,
+            null as data_type,
+            null as pre_data_type,
+            pre.next_run_started_at as detected_at
+        from pre_snapshots pre
+        left outer join
+            cur_snapshots cur
+            on pre.node_id = cur.node_id
+                and pre.next_run_started_at = cur.run_started_at
+        where cur.name is null
+        and pre.next_run_started_at is not null
+    ),
 
     columns_removed_filter_deleted_tables as (
         select
@@ -233,6 +350,72 @@ with
             pre_data_type,
             detected_at
         from models_removed
+        union all
+        select
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
+            change,
+            column_name,
+            data_type,
+            pre_data_type,
+            detected_at
+        from seeds_added
+        union all
+        select
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
+            change,
+            column_name,
+            data_type,
+            pre_data_type,
+            detected_at
+        from seeds_removed
+        union all
+        select
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
+            change,
+            column_name,
+            data_type,
+            pre_data_type,
+            detected_at
+        from sources_added
+        union all
+        select
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
+            change,
+            column_name,
+            data_type,
+            pre_data_type,
+            detected_at
+        from sources_removed
+        union all
+        select
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
+            change,
+            column_name,
+            data_type,
+            pre_data_type,
+            detected_at
+        from snapshots_added
+        union all
+        select
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
+            change,
+            column_name,
+            data_type,
+            pre_data_type,
+            detected_at
+        from snapshots_removed
 
     )
 
