@@ -27,8 +27,31 @@ with
         from {{ ref('stg_column') }} as cols
         inner join _executions as excs on cols.command_invocation_id = excs.command_invocation_id
     ),
+    cur_models as (
+        select
+            mdls.*,
+            excs.previous_run_started_at,
+            excs.next_run_started_at
+        from {{ ref('stg_model') }} as mdls
+        inner join _executions as excs on mdls.command_invocation_id = excs.command_invocation_id
+    ),
 
+    pre_models as (
+        select
+            mdls.*,
+            excs.previous_run_started_at,
+            excs.next_run_started_at
+        from {{ ref('stg_model') }} as mdls
+        inner join _executions as excs on mdls.command_invocation_id = excs.command_invocation_id
+    ),
 
+    _models as (
+        select
+            *,
+            lag(run_started_at) over (partition by node_id order by run_started_at) as previous_run_started_at,
+            lead(run_started_at) over (partition by node_id order by run_started_at) as next_run_started_at
+        from {{ ref('stg_model') }}
+    ),
 
     type_changes as (
         select
@@ -37,7 +60,7 @@ with
             cur.column_name,
             cur.data_type,
             pre.data_type as pre_data_type,
-            pre.run_started_at as detected_at
+            pre.next_run_started_at as detected_at
         from pre inner join cur
             on (lower(cur.node_id) = lower(pre.node_id) and lower(cur.column_name) = lower(pre.column_name))
                 and pre.run_started_at = cur.previous_run_started_at
@@ -64,10 +87,8 @@ with
     columns_removed as (
         select
             pre.node_id,
-            cur.node_id as cur_node,
             'column_removed' as change,
             pre.column_name,
-            cur.column_name as cur_column,
             null as data_type,
             pre.data_type as pre_data_type,
             pre.next_run_started_at as detected_at
@@ -77,8 +98,72 @@ with
             on pre.node_id = cur.node_id
                 and pre.column_name = cur.column_name
                 and pre.next_run_started_at = cur.run_started_at
-        where cur.column_name is null and pre.next_run_started_at is not null
+        where cur.column_name is null
+        and pre.next_run_started_at is not null
     ),
+
+    models_added as (
+        select
+            cur.node_id,
+            'model_added' as change,
+            null as column_name,
+            null as data_type,
+            null as pre_data_type,
+            cur.run_started_at as detected_at
+        from cur_models cur
+        left outer join
+            pre_models pre
+            on cur.node_id = pre.node_id
+                and cur.previous_run_started_at = pre.run_started_at
+        where pre.name is null and cur.previous_run_started_at is not null
+    ),
+
+    models_removed as (
+        select
+            pre.node_id,
+            'model_removed' as change,
+            null as column_name,
+            null as data_type,
+            null as pre_data_type,
+            pre.next_run_started_at as detected_at
+        from pre_models pre
+        left outer join
+            cur_models cur
+            on pre.node_id = cur.node_id
+                and pre.next_run_started_at = cur.run_started_at
+        where cur.name is null
+        and pre.next_run_started_at is not null
+    ),
+
+    {# models_added as (
+        select
+            cur.node_id,
+            'model_added' as change,
+            null as column_name,
+            null as data_type,
+            null as pre_data_type,
+            cur.run_started_at as detected_at
+        from _models cur
+            left join _models pre
+            on cur.command_invocation_id = pre.command_invocation_id
+        where
+            (cur.previous_run_started_at < pre.previous_run_started_at or cur.previous_run_started_at is null) and pre.previous_run_started_at is not null
+
+    ),
+
+    models_removed as (
+        select
+            pre.node_id,
+            'model_removed' as change,
+            null as column_name,
+            null as data_type,
+            null as pre_data_type,
+            cur.next_run_started_at as detected_at
+        from _models pre
+			left join _models cur
+			on pre.command_invocation_id = cur.command_invocation_id
+		where pre.previous_run_started_at is null and pre.next_run_started_at > cur.next_run_started_at
+    ), #}
 
     columns_removed_filter_deleted_tables as (
         select
@@ -93,7 +178,7 @@ with
 
     ),
 
-    all_column_changes as (
+    all_changes as (
         select
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
@@ -126,7 +211,29 @@ with
             pre_data_type,
             detected_at
         from columns_added
+        union all
+        select
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
+            change,
+            column_name,
+            data_type,
+            pre_data_type,
+            detected_at
+        from models_added
+        union all
+        select
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
+            {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
+            change,
+            column_name,
+            data_type,
+            pre_data_type,
+            detected_at
+        from models_removed
 
     )
 
-select distinct * from all_column_changes
+select distinct * from all_changes
