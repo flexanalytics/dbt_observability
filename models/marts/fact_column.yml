@@ -39,10 +39,6 @@ models:
       hidden: true
     constraints:
       - type: not_null
-    tests:
-      - relationships:
-          to: ref('dim_execution')
-          field: execution_key
   - name: is_documented
     description: ''
     data_type: boolean

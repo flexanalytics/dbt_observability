@@ -123,6 +123,20 @@ models:
       hidden: true
     constraints:
       - type: not_null
+  - name: metric_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
+  - name: exposure_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
   - name: date_key
     description: ''
     data_type: text
