@@ -2,6 +2,7 @@ with
     test as (
         select
             command_invocation_id,
+            node_id,
             resource_type,
             project,
             resource_name,
@@ -21,6 +22,7 @@ select
         'project',
         'resource_name'
     ]) }} as test_key,
+    node_id,
     resource_type,
     project,
     resource_name,

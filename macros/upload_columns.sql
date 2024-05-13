@@ -1,20 +1,5 @@
 {% macro upload_columns(graph, path=None, materialization=None) -%}
-    {% set models = [] %}
-    {% if path and not materialization %}
-            {% if (path + node.name + ".sql") == node.original_file_path %}
-                {% do models.append(node) %}
-            {% endif %}
-        {% elif not path and materialization %}
-            {% if node.config.materialized == materialization %}
-                {% do models.append(node) %}
-            {% endif %}
-        {% elif path %}
-            {% if (path + node.name + ".sql") == node.original_file_path and node.config.materialized == materialization %}
-                {% do models.append(node) %}
-            {% endif %}
-        {% elif path and (path + node.name + ".sql") == node.original_file_path and node.config.materialized == materialization %}
-            {% do models.append(node) %}
-        {% endif %}
+    {% set models = dbt_observability.get_models_list(graph, path, materialization) %}
     {{ return(adapter.dispatch('get_columns_dml_sql', 'dbt_observability')(models)) }}
 {%- endmacro %}
 
@@ -46,6 +31,7 @@
 
 {% macro get_observability_value(argument_name, node) %}
     {% set config = dbt_observability.get_observability_config_from_node(node) %}
+    {{ print(config) }}
     {% if config and config is mapping %}
         {%- set model_config_value = config.get(argument_name) %}
         {%- if model_config_value %}

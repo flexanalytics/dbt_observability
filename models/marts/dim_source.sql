@@ -2,6 +2,7 @@ with
     source as (
         select
             command_invocation_id,
+            node_id,
             resource_type,
             project,
             resource_name,
@@ -23,6 +24,7 @@ select
         'project',
         'resource_name'
     ]) }} as source_key,
+    node_id,
     database_name,
     schema_name,
     source_name,

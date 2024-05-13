@@ -22,6 +22,11 @@ models:
       - type: unique
       - type: primary_key
         warn_unenforced: false
+  - name: node_id
+    description: ''
+    data_type: text
+    meta:
+      label: Node ID
   - name: resource_type
     description: ''
     data_type: text

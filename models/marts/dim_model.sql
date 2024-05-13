@@ -45,6 +45,7 @@ with
     final as (
         select
             models.model_key,
+            models.node_id,
             models.resource_type,
             models.project,
             models.resource_name,

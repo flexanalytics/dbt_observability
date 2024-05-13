@@ -12,6 +12,11 @@ models:
     tests:
     - not_null
     - unique
+  - name: node_id
+    description: ''
+    data_type: text
+    meta:
+      label: Node ID
   - name: resource_type
     description: ''
     data_type: text

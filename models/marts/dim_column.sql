@@ -2,6 +2,7 @@ with
     columns as (
         select
             command_invocation_id,
+            node_id,
             resource_type,
             project,
             resource_name,
@@ -15,6 +16,7 @@ with
 
 select
     {{ dbt_utils.generate_surrogate_key(['command_invocation_id', 'resource_type', 'project', 'resource_name', 'column_name']) }} as column_key,
+    node_id,
     resource_type,
     project,
     resource_name,
