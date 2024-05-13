@@ -297,6 +297,7 @@ with
 
     all_changes as (
         select
+            node_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -308,6 +309,7 @@ with
         from type_changes
         union all
         select
+            node_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -319,6 +321,7 @@ with
         from columns_removed_filter_deleted_tables
         union all
         select
+            node_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -330,6 +333,7 @@ with
         from columns_added
         union all
         select
+            node_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -341,6 +345,7 @@ with
         from models_added
         union all
         select
+            node_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -352,6 +357,7 @@ with
         from models_removed
         union all
         select
+            node_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -363,6 +369,7 @@ with
         from seeds_added
         union all
         select
+            node_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -374,6 +381,7 @@ with
         from seeds_removed
         union all
         select
+            node_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -385,6 +393,7 @@ with
         from sources_added
         union all
         select
+            node_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -396,6 +405,7 @@ with
         from sources_removed
         union all
         select
+            node_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -407,6 +417,7 @@ with
         from snapshots_added
         union all
         select
+            node_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
