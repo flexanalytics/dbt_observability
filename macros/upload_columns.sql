@@ -1,4 +1,4 @@
-{% macro upload_columns(graph, path=None) -%}
+{% macro upload_columns(graph, path=None, materialization=None) -%}
     {% set models = [] %}
     {% if path and not materialization %}
             {% if (path + node.name + ".sql") == node.original_file_path %}

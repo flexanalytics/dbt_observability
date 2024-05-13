@@ -59,7 +59,7 @@
 
         {% do log("Uploading model columns", true) %}
         {% set models = dbt_observability.get_relation('columns') %}
-        {% set content_columns = dbt_observability.upload_columns(graph, path) %}
+        {% set content_columns = dbt_observability.upload_columns(graph, path, materialization) %}
         {{ dbt_observability.insert_into_metadata_table(
             database_name=models.database,
             schema_name=models.schema,
