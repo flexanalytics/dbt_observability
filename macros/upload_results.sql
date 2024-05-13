@@ -16,6 +16,7 @@
 
 {% macro upload_results(results) -%}
     {% set path = var('dbt_observability_path') %}
+    {% set materialization = var('dbt_observability_materialization') %}
 
     {% if execute and var('dbt_observability:enabled', false) and flags.WHICH not in ['generate','serve','test'] %}
 
@@ -47,7 +48,7 @@
 
         {% do log("Uploading models", true) %}
         {% set models = dbt_observability.get_relation('models') %}
-        {% set content_models = dbt_observability.upload_models(graph, path) %}
+        {% set content_models = dbt_observability.upload_models(graph, path, materialization) %}
         {{ dbt_observability.insert_into_metadata_table(
             database_name=models.database,
             schema_name=models.schema,

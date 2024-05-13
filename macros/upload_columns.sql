@@ -1,12 +1,20 @@
 {% macro upload_columns(graph, path=None) -%}
     {% set models = [] %}
-    {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "model") | selectattr("package_name", "equalto", project_name) | rejectattr("config.materialized", "equalto", "ephemeral") %}
-        {% if path and (path + node.name + ".sql") == node.original_file_path %}
-            {% do models.append(node) %}
-        {% elif not path %}
+    {% if path and not materialization %}
+            {% if (path + node.name + ".sql") == node.original_file_path %}
+                {% do models.append(node) %}
+            {% endif %}
+        {% elif not path and materialization %}
+            {% if node.config.materialized == materialization %}
+                {% do models.append(node) %}
+            {% endif %}
+        {% elif path %}
+            {% if (path + node.name + ".sql") == node.original_file_path and node.config.materialized == materialization %}
+                {% do models.append(node) %}
+            {% endif %}
+        {% elif path and (path + node.name + ".sql") == node.original_file_path and node.config.materialized == materialization %}
             {% do models.append(node) %}
         {% endif %}
-    {% endfor %}
     {{ return(adapter.dispatch('get_columns_dml_sql', 'dbt_observability')(models)) }}
 {%- endmacro %}
 
