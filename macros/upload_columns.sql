@@ -31,7 +31,6 @@
 
 {% macro get_observability_value(argument_name, node) %}
     {% set config = dbt_observability.get_observability_config_from_node(node) %}
-    {{ print(config) }}
     {% if config and config is mapping %}
         {%- set model_config_value = config.get(argument_name) %}
         {%- if model_config_value %}
