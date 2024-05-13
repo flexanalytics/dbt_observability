@@ -159,11 +159,13 @@ models:
     data_type: boolean
     meta:
       label: Was Full Refresh
+      datatype: boolean
   - name: thread_id
     description: ''
     data_type: integer
     meta:
       label: Thread ID
+      datatype: integer
   - name: compile_started_at
     description: ''
     meta:
@@ -201,3 +203,4 @@ models:
     data_type: numeric
     meta:
       label: Total Node Runtime
+      datatype: numeric
