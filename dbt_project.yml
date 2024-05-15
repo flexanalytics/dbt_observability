@@ -13,10 +13,18 @@ models:
   dbt_observability:
     +materialized: view
     +file_format: delta
+    +schema: observability
     sources:
       +materialized: incremental
       +on_schema_change: append_new_columns
       +full_refresh: false
+    +access: public
+    staging:
+      +schema: observability
+      +materialized: view
+    views:
+      +schema: observability
+      +materialized: view
 
 dispatch:
   - macro_namespace: dbt

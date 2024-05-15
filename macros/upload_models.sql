@@ -1,8 +1,5 @@
-{% macro upload_models(graph) -%}
-    {% set models = [] %}
-    {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "model") | selectattr("package_name", "equalto", project_name) %}
-        {% do models.append(node) %}
-    {% endfor %}
+{% macro upload_models(graph, path=None, materialization=None) -%}
+    {% set models = dbt_observability.get_models_list(graph, path, materialization) %}
     {{ return(adapter.dispatch('get_models_dml_sql', 'dbt_observability')(models)) }}
 {%- endmacro %}
 

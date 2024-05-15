@@ -1,0 +1,206 @@
+version: 2
+models:
+- name: fact_execution
+  description: ''
+  meta:
+    label: Execution Fact
+    display_index: 1
+    joins:
+      - to: dim_execution
+        type: inner
+        join_on:
+          - from_field: execution_key
+            exp: '='
+            to_field: execution_key
+      - to: dim_invocation
+        type: inner
+        join_on:
+          - from_field: invocation_key
+            exp: '='
+            to_field: invocation_key
+      - to: dim_model
+        type: inner
+        join_on:
+          - from_field: model_key
+            exp: '='
+            to_field: model_key
+      - to: dim_test
+        type: inner
+        join_on:
+          - from_field: test_key
+            exp: '='
+            to_field: test_key
+      - to: dim_seed
+        type: inner
+        join_on:
+          - from_field: seed_key
+            exp: '='
+            to_field: seed_key
+      - to: dim_source
+        type: inner
+        join_on:
+          - from_field: source_key
+            exp: '='
+            to_field: source_key
+      - to: dim_snapshot
+        type: inner
+        join_on:
+          - from_field: snapshot_key
+            exp: '='
+            to_field: snapshot_key
+      - to: dim_metric
+        type: inner
+        join_on:
+          - from_field: metric_key
+            exp: '='
+            to_field: metric_key
+      - to: dim_exposure
+        type: inner
+        join_on:
+          - from_field: exposure_key
+            exp: '='
+            to_field: exposure_key
+      - to: dim_date
+        type: inner
+        join_on:
+          - from_field: date_key
+            exp: '='
+            to_field: date_key
+  columns:
+  - name: execution_key
+    description: ''
+    meta:
+      hidden: true
+    tests:
+    - not_null
+    - unique
+  - name: invocation_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
+  - name: model_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
+  - name: column_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
+  - name: test_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
+  - name: seed_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
+  - name: source_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
+  - name: snapshot_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
+  - name: metric_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
+  - name: exposure_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
+  - name: date_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
+    constraints:
+      - type: not_null
+  - name: run_started_at
+    description: ''
+    data_type: timestamp
+    meta:
+      label: Run Started At
+      hidden: false
+      datatype: date
+      format:
+        type: date
+        pattern: YYYY-MM-DD HH:mm:ss
+  - name: was_full_refresh
+    description: ''
+    data_type: boolean
+    meta:
+      label: Was Full Refresh
+      datatype: boolean
+  - name: thread_id
+    description: ''
+    data_type: integer
+    meta:
+      label: Thread ID
+      datatype: integer
+  - name: compile_started_at
+    description: ''
+    meta:
+      label: Compile Started At
+      hidden: false
+      datatype: date
+      format:
+        type: date
+        pattern: YYYY-MM-DD HH:mm:ss
+    meta:
+      label: Compile Started At
+      hidden: false
+      datatype: date
+      format:
+        type: date
+        pattern: YYYY-MM-DD HH:mm:ss
+  - name: query_completed_at
+    description: ''
+    meta:
+      label: Query Completed At
+      hidden: false
+      datatype: date
+      format:
+        type: date
+        pattern: YYYY-MM-DD HH:mm:ss
+    meta:
+      label: Query Completed At
+      hidden: false
+      datatype: date
+      format:
+        type: date
+        pattern: YYYY-MM-DD HH:mm:ss
+  - name: total_node_runtime
+    description: ''
+    data_type: numeric
+    meta:
+      label: Total Node Runtime
+      datatype: numeric

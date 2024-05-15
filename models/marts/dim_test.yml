@@ -1,0 +1,59 @@
+version: 2
+models:
+- name: dim_test
+  description: ''
+  meta:
+    label: Test Dimension
+  columns:
+  - name: test_key
+    description: ''
+    meta:
+      hidden: true
+    tests:
+    - not_null
+    - unique
+  - name: node_id
+    description: ''
+    data_type: text
+    meta:
+      label: Node ID
+  - name: resource_type
+    description: ''
+    data_type: text
+    meta:
+      label: Resource Type
+  - name: project
+    description: ''
+    data_type: text
+    meta:
+      label: Project
+  - name: resource_name
+    description: ''
+    data_type: text
+    meta:
+      label: Resource Name
+  - name: name
+    description: ''
+    data_type: text
+    meta:
+      label: Name
+  - name: depends_on_nodes
+    description: ''
+    data_type: text
+    meta:
+      label: Depends On Nodes
+  - name: test_path
+    description: ''
+    data_type: text
+    meta:
+      label: Test Path
+  - name: tags
+    description: ''
+    data_type: text
+    meta:
+      label: Tags
+  - name: test_metadata
+    description: ''
+    data_type: text
+    meta:
+      label: Test Metadata

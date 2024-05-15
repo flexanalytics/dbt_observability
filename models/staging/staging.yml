@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: stg_column
+    meta:
+      hidden: true
+  - name: stg_date
+    meta:
+      hidden: true
+  - name: stg_execution
+    meta:
+      hidden: true
+  - name: stg_exposure
+    meta:
+      hidden: true
+  - name: stg_invocation
+    meta:
+      hidden: true
+  - name: stg_metric
+    meta:
+      hidden: true
+  - name: stg_model
+    meta:
+      hidden: true
+  - name: stg_seed
+    meta:
+      hidden: true
+  - name: stg_snapshot
+    meta:
+      hidden: true
+  - name: stg_source
+    meta:
+      hidden: true
+  - name: stg_test
+    meta:
+      hidden: true

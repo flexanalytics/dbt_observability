@@ -15,6 +15,8 @@
 {% endmacro %}
 
 {% macro upload_results(results) -%}
+    {% set path = var('dbt_observability:path') %}
+    {% set materialization = var('dbt_observability:materialization') %}
 
     {% if execute and var('dbt_observability:enabled', false) and flags.WHICH not in ['generate','serve','test'] %}
 
@@ -46,7 +48,7 @@
 
         {% do log("Uploading models", true) %}
         {% set models = dbt_observability.get_relation('models') %}
-        {% set content_models = dbt_observability.upload_models(graph) %}
+        {% set content_models = dbt_observability.upload_models(graph, path, materialization) %}
         {{ dbt_observability.insert_into_metadata_table(
             database_name=models.database,
             schema_name=models.schema,
@@ -57,7 +59,7 @@
 
         {% do log("Uploading model columns", true) %}
         {% set models = dbt_observability.get_relation('columns') %}
-        {% set content_columns = dbt_observability.upload_columns(graph) %}
+        {% set content_columns = dbt_observability.upload_columns(graph, path, materialization) %}
         {{ dbt_observability.insert_into_metadata_table(
             database_name=models.database,
             schema_name=models.schema,
@@ -66,7 +68,7 @@
             )
         }}
 
-        {% do log("Uploading metrics", true) %}
+        {# {% do log("Uploading metrics", true) %}
         {% set metrics = dbt_observability.get_relation('metrics') %}
         {% set content_metrics = dbt_observability.upload_metrics(graph) %}
         {{ dbt_observability.insert_into_metadata_table(
@@ -75,7 +77,7 @@
             table_name=metrics.identifier,
             content=content_metrics
             )
-        }}
+        }} #}
 
         {% do log("Uploading exposures", true) %}
         {% set exposures = dbt_observability.get_relation('exposures') %}

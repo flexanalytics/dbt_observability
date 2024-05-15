@@ -1,0 +1,96 @@
+version: 2
+models:
+- name: dim_invocation
+  description: ''
+  meta:
+    label: Invocation Dimension
+  columns:
+  - name: invocation_key
+    description: ''
+    meta:
+      hidden: true
+    tests:
+    - not_null
+    - unique
+  - name: command_invocation_id
+    description: ''
+  - name: dbt_version
+    description: ''
+    data_type: text
+    meta:
+      label: dbt Version
+  - name: project_name
+    description: ''
+    data_type: text
+    meta:
+      label: Project Name
+  - name: dbt_command
+    description: ''
+    data_type: text
+    meta:
+      label: dbt Command
+  - name: full_refresh_flag
+    description: ''
+    data_type: text
+    meta:
+      label: Full Refresh Flag
+  - name: target_type
+    description: ''
+    data_type: text
+    meta:
+      label: Target Type
+  - name: target_profile_name
+    description: ''
+    data_type: text
+    meta:
+      label: Target Profile Name
+  - name: target_name
+    description: ''
+    data_type: text
+    meta:
+      label: Target Name
+  - name: target_schema
+    description: ''
+    data_type: text
+    meta:
+      label: Target Schema
+  - name: target_threads
+    description: ''
+    data_type: int
+    meta:
+      label: Target Threads
+  - name: dbt_cloud_project_id
+    description: ''
+    data_type: text
+    meta:
+      label: dbt Cloud Project ID
+  - name: dbt_cloud_job_id
+    description: ''
+    data_type: text
+    meta:
+      label: dbt Cloud Job ID
+  - name: dbt_cloud_run_id
+    description: ''
+    data_type: text
+    meta:
+      label: dbt Cloud Run ID
+  - name: dbt_cloud_run_reason_category
+    description: ''
+    data_type: text
+    meta:
+      label: dbt Cloud Run Reason Category
+  - name: dbt_cloud_run_reason
+    description: ''
+    data_type: text
+    meta:
+      label: dbt Cloud Run Reason
+  - name: env_vars
+    description: ''
+    data_type: text
+    meta:
+      label: Environment Variables
+  - name: dbt_vars
+    description: ''
+    data_type: text
+    meta:
+      label: dbt Variables

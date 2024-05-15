@@ -1,7 +1,8 @@
 /* Bigquery won't let us `where` without `from` so we use this workaround */
-with dummy_cte as (
-    select 1 as foo
-)
+with
+    dummy_cte as (
+        select 1 as foo
+    )
 
 select
     cast(null as {{ type_string() }}) as command_invocation_id,

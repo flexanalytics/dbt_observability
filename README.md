@@ -1,6 +1,6 @@
 # dbt Observability Package
 
-This dbt package builds a data mart of tables that track dbt projects, run/build history, and a history of table and columns. 
+This dbt package builds a data mart of tables that track dbt projects, run/build history, and a history of table and columns.
 
 Based on [dbt_artifacts](https://github.com/brooklyn-data/dbt_artifacts), this project differs in a few key ways:
 * Adds a `columns.sql` model to track model column details (column_name, data_type, meta, and more)
@@ -46,6 +46,16 @@ packages:
 The following configuration can be used to specify where the raw (sources) data is uploaded, and where the dbt models are created:
 
 ```yml
+
+vars:
+...
+  "dbt_observability:enabled": true
+  "dbt_observability:column_stats_type": "DOC"
+  "dbt_observability:column_values_max": 10
+  "dbt_observability:path": # must be in the form of "dbt_observability:path": "path/subpath/" or "dbt_observability:path":
+  "dbt_observability:materialization": table # must be one of "table", "view", "incremental", "ephemeral" or "dbt_observability:materialization":
+...
+
 models:
   ...
   dbt_observability:
