@@ -33,14 +33,14 @@
 
         {% for model in models -%}
 
-            {% if model.config.materialized == "ephemeral" %}
-                {%- set model_rowcount = 0 -%}
-            {% else %}
+            {% if model.config.materialized == "table" %}
                 {%- set rowcount_query %}
                 select count(*) as model_rowcount from {{ model.schema }}.{{ model.name }}
                 {%- endset -%}
                 {%- set results = run_query(rowcount_query) -%}
                 {%- set model_rowcount = results.columns[0].values()[0] -%}
+            {% else %}
+                {%- set model_rowcount = 0 -%}
             {% endif %}
 
             (
@@ -74,14 +74,14 @@
         {% set model_values %}
             {% for model in models -%}
 
-                {% if model.config.materialized == "ephemeral" %}
-                    {%- set model_rowcount = 0 -%}
-                {% else %}
+                {% if model.config.materialized == "table" %}
                     {%- set rowcount_query %}
                     select count(*) as model_rowcount from {{ model.schema }}.{{ model.name }}
                     {%- endset -%}
                     {%- set results = run_query(rowcount_query) -%}
                     {%- set model_rowcount = results.columns[0].values()[0] -%}
+                {% else %}
+                    {%- set model_rowcount = 0 -%}
                 {% endif %}
 
                 (
