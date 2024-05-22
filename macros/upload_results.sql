@@ -15,8 +15,8 @@
 {% endmacro %}
 
 {% macro upload_results(results) -%}
-    {% set path = var('dbt_observability:path') %}
-    {% set materialization = var('dbt_observability:materialization') %}
+    {% set path = var('dbt_observability:path',None) %}
+    {% set materialization = var('dbt_observability:materialization',None) %}
 
     {% if execute and var('dbt_observability:enabled', false) and flags.WHICH not in ['generate','serve','test'] %}
 
