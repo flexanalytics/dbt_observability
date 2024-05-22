@@ -68,7 +68,7 @@
                 '{{ tojson(model.tags) }}', {# tags #}
                 '{{ tojson(model.config.meta) }}', {# meta #}
                 '{{ null if model.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(model.description) }}', {# description #}
-                {{ model_rowcount }} {# total rowcount #}
+                {{ 0 if model_rowcount is not defined else model_rowcount }} {# total rowcount #}
             )
             {%- if not loop.last %},{%- endif %}
         {%- endfor %}
@@ -109,7 +109,7 @@
                     {{ tojson(model.tags) }}, {# tags #}
                     parse_json('{{ tojson(model.config.meta) }}'), {# meta #}
                     '{{ null if model.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(model.description) }}', {# description #}
-                    {{ model_rowcount }} {# total rowcount #}
+                    {{ 0 if model_rowcount is not defined else model_rowcount }} {# total rowcount #}
                 )
                 {%- if not loop.last %},{%- endif %}
             {%- endfor %}
