@@ -1,79 +1,80 @@
 version: 2
-models:
-- name: dim_exposure
-  description: ''
-  meta:
-    label: Exposure Dimension
-  columns:
-  - name: exposure_key
+dbt_observability:
+  models:
+  - name: dim_exposure
     description: ''
     meta:
-      hidden: true
-    tests:
-    - not_null
-    - unique
-  - name: node_id
-    description: ''
-    data_type: text
-    meta:
-      label: Node ID
-  - name: resource_type
-    description: ''
-    data_type: text
-    meta:
-      label: Resource Type
-  - name: project
-    description: ''
-    data_type: text
-    meta:
-      label: Project
-  - name: resource_name
-    description: ''
-    data_type: text
-    meta:
-      label: Resource Name
-  - name: name
-    description: ''
-    data_type: text
-    meta:
-      label: Name
-  - name: type
-    description: ''
-    data_type: text
-    meta:
-      label: Type
-  - name: owner
-    description: ''
-    data_type: text
-    meta:
-      label: Owner
-  - name: maturity
-    description: ''
-    data_type: text
-    meta:
-      label: Maturity
-  - name: path
-    description: ''
-    data_type: text
-    meta:
-      label: Path
-  - name: description
-    description: ''
-    data_type: text
-    meta:
-      label: Description
-  - name: url
-    description: ''
-    data_type: text
-    meta:
-      label: URL
-  - name: package_name
-    description: ''
-    data_type: text
-    meta:
-      label: Package Name
-  - name: depends_on_nodes
-    description: ''
-    data_type: text
-    meta:
-      label: Depends On Nodes
+      label: Exposure Dimension
+    columns:
+    - name: exposure_key
+      description: ''
+      meta:
+        hidden: true
+      tests:
+      - not_null
+      - unique
+    - name: node_id
+      description: ''
+      data_type: text
+      meta:
+        label: Node ID
+    - name: resource_type
+      description: ''
+      data_type: text
+      meta:
+        label: Resource Type
+    - name: project
+      description: ''
+      data_type: text
+      meta:
+        label: Project
+    - name: resource_name
+      description: ''
+      data_type: text
+      meta:
+        label: Resource Name
+    - name: name
+      description: ''
+      data_type: text
+      meta:
+        label: Name
+    - name: type
+      description: ''
+      data_type: text
+      meta:
+        label: Type
+    - name: owner
+      description: ''
+      data_type: text
+      meta:
+        label: Owner
+    - name: maturity
+      description: ''
+      data_type: text
+      meta:
+        label: Maturity
+    - name: path
+      description: ''
+      data_type: text
+      meta:
+        label: Path
+    - name: description
+      description: ''
+      data_type: text
+      meta:
+        label: Description
+    - name: url
+      description: ''
+      data_type: text
+      meta:
+        label: URL
+    - name: package_name
+      description: ''
+      data_type: text
+      meta:
+        label: Package Name
+    - name: depends_on_nodes
+      description: ''
+      data_type: text
+      meta:
+        label: Depends On Nodes
