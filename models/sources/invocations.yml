@@ -1,41 +1,42 @@
 version: 2
-models:
-- name: invocations
-  description: ''
-  columns:
-  - name: command_invocation_id
+dbt_observability:
+  models:
+  - name: invocations
     description: ''
-  - name: dbt_version
-    description: ''
-  - name: project_name
-    description: ''
-  - name: run_started_at
-    description: ''
-  - name: dbt_command
-    description: ''
-  - name: full_refresh_flag
-    description: ''
-  - name: target_type
-    description: ''
-  - name: target_profile_name
-    description: ''
-  - name: target_name
-    description: ''
-  - name: target_schema
-    description: ''
-  - name: target_threads
-    description: ''
-  - name: dbt_cloud_project_id
-    description: ''
-  - name: dbt_cloud_job_id
-    description: ''
-  - name: dbt_cloud_run_id
-    description: ''
-  - name: dbt_cloud_run_reason_category
-    description: ''
-  - name: dbt_cloud_run_reason
-    description: ''
-  - name: env_vars
-    description: ''
-  - name: dbt_vars
-    description: ''
+    columns:
+    - name: command_invocation_id
+      description: ''
+    - name: dbt_version
+      description: ''
+    - name: project_name
+      description: ''
+    - name: run_started_at
+      description: ''
+    - name: dbt_command
+      description: ''
+    - name: full_refresh_flag
+      description: ''
+    - name: target_type
+      description: ''
+    - name: target_profile_name
+      description: ''
+    - name: target_name
+      description: ''
+    - name: target_schema
+      description: ''
+    - name: target_threads
+      description: ''
+    - name: dbt_cloud_project_id
+      description: ''
+    - name: dbt_cloud_job_id
+      description: ''
+    - name: dbt_cloud_run_id
+      description: ''
+    - name: dbt_cloud_run_reason_category
+      description: ''
+    - name: dbt_cloud_run_reason
+      description: ''
+    - name: env_vars
+      description: ''
+    - name: dbt_vars
+      description: ''
