@@ -57,14 +57,16 @@
             )
         }}
 
-        {% do log("Uploading model columns", true) %}
+        {% do log("Uploading model and source columns", true) %}
         {% set models = dbt_observability.get_relation('columns') %}
         {% set content_columns = dbt_observability.upload_columns(graph, path, materialization) %}
+        {% set content_sources = dbt_observability.upload_source_schema(graph) %}
+        {% set content_columns_and_sources = content_columns ~ ', ' ~ content_sources %}
         {{ dbt_observability.insert_into_metadata_table(
             database_name=models.database,
             schema_name=models.schema,
             table_name=models.identifier,
-            content=content_columns
+            content=content_columns_and_sources
             )
         }}
 
