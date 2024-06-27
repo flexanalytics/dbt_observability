@@ -7,26 +7,39 @@
 {%- endmacro %}
 
 {% macro default__get_source_columns_info(sources) -%}
+    {% set source_schemas = [] %}
+    {% for source in sources %}
+        {% do source_schemas.append(source.schema) %}
+    {% endfor %}
+    {% set source_schemas = source_schemas | unique %}
+    {% set source_databases = [] %}
+    {% for source in sources %}
+        {% do source_databases.append(source.database) %}
+    {% endfor %}
+    {% set source_databases = source_databases | unique %}
     {% set source_info_query %}
+    {% for database in source_databases %}
     select
         column_name,
         table_name,
         data_type
-    from information_schema.columns
-    where table_schema in (
-        {% for source in sources -%}
-            '{{ source.schema }}'
+    from {{ database }}.information_schema.columns
+    where lower(table_schema) in (
+        {% for schema in source_schemas -%}
+            '{{ schema }}'
             {%- if not loop.last %}, {% endif %}
         {%- endfor %}
     )
-    and table_name in (
+    and lower(table_name) in (
         {% for source in sources -%}
             '{{ source.identifier }}'
             {%- if not loop.last %}, {% endif %}
         {%- endfor %}
     )
     order by table_name, ordinal_position
-    {% endset %}
+    {%- if not loop.last %} union all {% endif %}
+    {% endfor %}
+    {%- endset %}
     {% set result = run_query(source_info_query) %}
     {% set column_values %}
     {% if execute %}
