@@ -68,6 +68,17 @@
             )
         }}
 
+        {% do log("Uploading source columns", true) %}
+        {% set models = dbt_observability.get_relation('columns') %}
+        {% set content_sources = dbt_observability.upload_source_schema(graph) %}
+        {{ dbt_observability.insert_into_metadata_table(
+            database_name=models.database,
+            schema_name=models.schema,
+            table_name=models.identifier,
+            content=content_sources
+            )
+        }}
+
         {# {% do log("Uploading metrics", true) %}
         {% set metrics = dbt_observability.get_relation('metrics') %}
         {% set content_metrics = dbt_observability.upload_metrics(graph) %}

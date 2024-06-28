@@ -58,3 +58,17 @@
     {% do run_query(insert_into_table_query) %}
 
 {%- endmacro %}
+
+{% macro postgres__insert_into_metadata_table(database_name, schema_name, table_name, content) -%}
+
+    {% set insert_into_table_query %}
+    begin;
+    insert into {{database_name}}.{{ schema_name }}.{{ table_name }}
+    VALUES
+    {{ content }};
+    commit;
+    {% endset %}
+
+    {% do run_query(insert_into_table_query) %}
+
+{%- endmacro %}
