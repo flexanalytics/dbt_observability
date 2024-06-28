@@ -22,7 +22,13 @@ with
     ),
 
     _tests as (
-        select lower(depends_on_nodes) as depends_on_nodes
+        select lower(
+            {% if target.type == 'snowflake' %}
+                array_to_string(depends_on_nodes, '')
+            {% else %}
+                depends_on_nodes
+            {% endif %})
+            as depends_on_nodes
         from {{ ref('stg_test') }}
     ),
 
