@@ -43,6 +43,29 @@
     {% set result = run_query(source_info_query) %}
     {% set column_values %}
     {% if execute %}
+    {% set adapterArr = ['databricks','spark','snowflake'] %}
+        {% if target.type in adapterArr %}
+        select
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(1) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(2) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(3) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(4) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(5) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(6) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(7) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(8) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(9) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(10) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(11) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(12) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(13) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(14) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(15) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(16) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(17) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(18) }}
+        from values
+        {% endif %}
         {% set columns, tables, types = result.columns[0].values(), result.columns[1].values(), result.columns[2].values() %}
         {% for column, table, type in zip(columns, tables, types) %}
             (
