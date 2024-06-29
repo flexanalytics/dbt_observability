@@ -1,65 +1,64 @@
 version: 2
-dbt_observability:
-  models:
-  - name: dim_seed
+models:
+- name: dim_seed
+  description: ''
+  meta:
+    label: Seed Dimension
+  columns:
+  - name: seed_key
     description: ''
     meta:
-      label: Seed Dimension
-    columns:
-    - name: seed_key
-      description: ''
-      meta:
-        hidden: true
-      tests:
-      - not_null
-      - unique
-    - name: node_id
-      description: ''
-      data_type: text
-      meta:
-        label: Node ID
-    - name: resource_type
-      description: ''
-      data_type: text
-      meta:
-        label: Resource Type
-    - name: project
-      description: ''
-      data_type: text
-      meta:
-        label: Project
-    - name: resource_name
-      description: ''
-      data_type: text
-      meta:
-        label: Resource Name
-    - name: database_name
-      description: ''
-      data_type: text
-      meta:
-        label: Database Name
-    - name: schema_name
-      description: ''
-      data_type: text
-      meta:
-        label: Schema Name
-    - name: name
-      description: ''
-      data_type: text
-      meta:
-        label: Name
-    - name: package_name
-      description: ''
-      data_type: text
-      meta:
-        label: Package Name
-    - name: path
-      description: ''
-      data_type: text
-      meta:
-        label: Path
-    - name: checksum
-      description: ''
-      data_type: text
-      meta:
-        label: Checksum
+      hidden: true
+    tests:
+    - not_null
+    - unique
+  - name: node_id
+    description: ''
+    data_type: text
+    meta:
+      label: Node ID
+  - name: resource_type
+    description: ''
+    data_type: text
+    meta:
+      label: Resource Type
+  - name: project
+    description: ''
+    data_type: text
+    meta:
+      label: Project
+  - name: resource_name
+    description: ''
+    data_type: text
+    meta:
+      label: Resource Name
+  - name: database_name
+    description: ''
+    data_type: text
+    meta:
+      label: Database Name
+  - name: schema_name
+    description: ''
+    data_type: text
+    meta:
+      label: Schema Name
+  - name: name
+    description: ''
+    data_type: text
+    meta:
+      label: Name
+  - name: package_name
+    description: ''
+    data_type: text
+    meta:
+      label: Package Name
+  - name: path
+    description: ''
+    data_type: text
+    meta:
+      label: Path
+  - name: checksum
+    description: ''
+    data_type: text
+    meta:
+      label: Checksum

@@ -1,70 +1,66 @@
 version: 2
-dbt_observability:
-  models:
-  - name: dim_column
-    description: "{{ doc('dim_column')}}"
-    config:
-      contract:
-        enforced: true
+models:
+- name: dim_column
+  description: "{{ doc('dim_column')}}"
+  meta:
+    label: Column Dimension
+  columns:
+  - name: column_key
+    data_type: text
+    description: ''
+    tests:
+    - not_null
+    - unique
     meta:
-      label: Column Dimension
-    columns:
-    - name: column_key
-      data_type: text
-      description: ''
-      tests:
-      - not_null
-      - unique
-      meta:
-        label: column_key
-        hidden: true
-      constraints:
-        - type: not_null
-        - type: unique
-        - type: primary_key
-          warn_unenforced: false
-    - name: node_id
-      description: ''
-      data_type: text
-      meta:
-        label: Node ID
-    - name: resource_type
-      description: ''
-      data_type: text
-      meta:
-        label: Resource Type
-    - name: project
-      description: ''
-      data_type: text
-      meta:
-        label: Project
-    - name: resource_name
-      description: ''
-      data_type: text
-      meta:
-        label: Resource Name
-    - name: column_name
-      description: ''
-      data_type: text
-      meta:
-        label: Column Name
-    - name: data_type
-      description: ''
-      data_type: text
-      meta:
-        label: Data Type
-    - name: tags
-      description: ''
-      data_type: text
-      meta:
-        label: Tags
-    - name: meta
-      description: ''
-      data_type: text
-      meta:
-        label: Meta
-    - name: description
-      description: ''
-      data_type: text
-      meta:
-        label: Description
+      label: column_key
+      hidden: true
+    constraints:
+      - type: not_null
+      - type: unique
+      - type: primary_key
+        warn_unenforced: false
+  - name: node_id
+    description: ''
+    data_type: text
+    meta:
+      label: Node ID
+  - name: resource_type
+    description: ''
+    data_type: text
+    meta:
+      label: Resource Type
+  - name: project
+    description: ''
+    data_type: text
+    meta:
+      label: Project
+  - name: resource_name
+    description: ''
+    data_type: text
+    meta:
+      label: Resource Name
+  - name: column_name
+    description: ''
+    data_type: text
+    meta:
+      label: Column Name
+  - name: data_type
+    description: ''
+    data_type: text
+    meta:
+      label: Data Type
+  - name: tags
+    description: ''
+    data_type: text
+    meta:
+      label: Tags
+  - name: meta
+    description: ''
+    data_type: text
+    meta:
+      label: Meta
+  - name: description
+    description: ''
+    data_type: text
+    meta:
+      label: Description
