@@ -2,7 +2,7 @@ with
     models as (
         select
             {{ dbt_utils.generate_surrogate_key([
-                'command_invocation_id', 'resource_type', 'project', 'resource_name'
+                'command_invocation_id', 'node_id'
                 ]) }} as model_key,
             node_id,
             resource_type,
