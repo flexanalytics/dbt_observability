@@ -26,8 +26,8 @@ with
     )
 
 select
-    {{ dbt_utils.generate_surrogate_key(['command_invocation_id', 'node_id']) }} as column_key,
-    {{ dbt_utils.generate_surrogate_key(['command_invocation_id', dbt.concat(['resource_type', "'.'", 'project', "'.'", 'resource_name'])]) }} as execution_key,
+    {{ dbt_utils.generate_surrogate_key(['command_invocation_id', 'node_id', 'column_name']) }} as column_key,
+    {{ dbt_utils.generate_surrogate_key(['command_invocation_id', 'node_id']) }} as execution_key,
     is_documented,
     row_count,
     row_distinct,
