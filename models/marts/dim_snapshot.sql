@@ -20,9 +20,7 @@ with
 select
     {{ dbt_utils.generate_surrogate_key([
         'command_invocation_id',
-        'resource_type',
-        'project',
-        'resource_name',]
+        'node_id']
         ) }} as snapshot_key,
     node_id,
     resource_type,
