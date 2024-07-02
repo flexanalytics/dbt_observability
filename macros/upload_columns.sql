@@ -37,11 +37,8 @@
             {{ return(model_config_value) }}
         {%- endif %}
     {% endif %}
-    {% set projectVar = var("dbt_observability:" ~ argument_name, "None") %}
-    {% if projectVar %}
-        {{ return(projectVar) }}
-    {% endif %}
-    {{ return(none) }}
+    {% set projectVar = var("dbt_observability:" ~ argument_name, None) %}
+    {{ return(projectVar) }}
 {% endmacro %}
 
 {% macro is_metric(column, model) %}
