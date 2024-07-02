@@ -451,39 +451,10 @@ with
             detected_at
         from snapshots_removed
 
-    ),
-
-    final as (
-        select distinct
-            node_id,
-            command_invocation_id,
-            resource_type,
-            project,
-            resource_name,
-            change,
-            column_name,
-            data_type,
-            pre_data_type,
-            cast(
-                {{
-                    dbt.date_trunc(
-                        'day', 'detected_at'
-                    )
-                }} as date
-            ) as detected_at_date,
-            detected_at
-        from all_changes
     )
 
-{% set resources = [
-    'execution',
-    'model',
-    'seed',
-    'source',
-    'snapshot'
-] %}
-
-select
+select distinct
+    {{ dbt_utils.generate_surrogate_key(["command_invocation_id", "node_id"]) }} as execution_key,
     node_id,
     command_invocation_id,
     resource_type,
@@ -493,12 +464,5 @@ select
     column_name,
     data_type,
     pre_data_type,
-    detected_at,
-    {{ dbt_utils.generate_surrogate_key(['detected_at']) }} as date_key,
-    {{ dbt_utils.generate_surrogate_key(["command_invocation_id", "node_id", "column_name"]) }} as column_key,
-    {{ dbt_utils.generate_surrogate_key(["command_invocation_id"]) }} as invocation_key,
-    {% for resource in resources %}
-        {{ dbt_utils.generate_surrogate_key(["command_invocation_id", "node_id"]) }} as {{ resource }}_key
-        {% if not loop.last %},{% endif %}
-    {% endfor %}
- from final
+    detected_at
+from all_changes
