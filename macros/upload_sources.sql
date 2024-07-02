@@ -25,8 +25,8 @@
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(8) }},
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(9) }},
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(10) }},
-            {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(11)) }}
-            {{ adapter.dispatch('column_identifier', 'dbt_observability')(12) }},
+            {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(11)) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(12) }}
         from values
 
         {% endif %}
@@ -56,7 +56,7 @@
                 '{{ source.identifier }}', {# identifier #}
                 '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(source.loaded_at_field) }}', {# loaded_at_field #}
                 '{{ tojson(adapter.dispatch('escape_singlequote', 'dbt_observability')(source.freshness)) }}', {# freshness #}
-                {{ 0 if source_rowcount is not defined else source_rowcount }} {# source_rowcount #}
+                {{ source_rowcount }} {# source_rowcount #}
 
             )
             {%- if not loop.last %},{%- endif %}
