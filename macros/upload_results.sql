@@ -20,7 +20,7 @@
     {% set target_names = var('dbt_observability:environments', ["prod"]) %}
     {% if target.name in target_names %}
 
-    {% if execute and var('dbt_observability:enabled', true) and flags.WHICH not in ['generate','serve','test'] %}
+    {% if execute and var('dbt_observability:tracking_enabled', true) and flags.WHICH not in ['generate','serve','test'] %}
 
         {% do log("Uploading invocations", true) %}
         {% set invocations = dbt_observability.get_relation('invocations') %}

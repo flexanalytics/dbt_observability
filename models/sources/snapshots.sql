@@ -1,4 +1,9 @@
 /* Bigquery won't let us `where` without `from` so we use this workaround */
+{{
+    config(
+        enabled=var('dbt_observability:tracking_enabled', true)
+    )
+}}
 with
     dummy_cte as (
         select 1 as foo
