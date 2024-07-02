@@ -32,10 +32,10 @@
         {% endif %}
 
         {% for source in sources -%}
-            {% if target.type == 'snowflake' %}
+            {% if target.type == 'snowflake' and var('dbt_observability:track_source_rowcounts', false) %}
                 {%- set rowcount_query %}
                 select row_count as source_rowcount
-                from '{{ source.database }}'.information_schema.tables
+                from {{ source.database }}.information_schema.tables
                 where lower(table_name) = lower('{{ source.source_name }}')
                     and lower(table_schema) = lower('{{ source.schema }}')
                 {%- endset -%}
