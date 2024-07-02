@@ -5,7 +5,19 @@ models:
   meta:
     label: Schema Changes
     display_index: 1
+    joins:
+      - to: dim_execution
+        type: inner
+        join_on:
+          - from_field: execution_key
+            exp: '='
+            to_field: execution_key
   columns:
+  - name: execution_key
+    description: ''
+    data_type: text
+    meta:
+      hidden: true
   - name: node_id
     description: ''
     data_type: text
@@ -56,3 +68,4 @@ models:
       format:
         type: date
         pattern: YYYY-MM-DD HH:mm:ss
+

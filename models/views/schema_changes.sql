@@ -109,6 +109,7 @@ with
     type_changes as (
         select
             cur.node_id,
+            cur.command_invocation_id,
             'type_changed' as change,
             cur.column_name,
             cur.data_type,
@@ -123,6 +124,7 @@ with
     columns_added as (
         select
             cur.node_id,
+            cur.command_invocation_id,
             'column_added' as change,
             cur.column_name,
             cur.data_type,
@@ -140,6 +142,7 @@ with
     columns_removed as (
         select
             pre.node_id,
+            pre.command_invocation_id,
             'column_removed' as change,
             pre.column_name,
             null as data_type,
@@ -158,6 +161,7 @@ with
     models_added as (
         select
             cur.node_id,
+            cur.command_invocation_id,
             'model_added' as change,
             null as column_name,
             null as data_type,
@@ -174,6 +178,7 @@ with
     models_removed as (
         select
             pre.node_id,
+            pre.command_invocation_id,
             'model_removed' as change,
             null as column_name,
             null as data_type,
@@ -191,6 +196,7 @@ with
     seeds_added as (
         select
             cur.node_id,
+            cur.command_invocation_id,
             'seed_added' as change,
             null as column_name,
             null as data_type,
@@ -207,6 +213,7 @@ with
     seeds_removed as (
         select
             pre.node_id,
+            pre.command_invocation_id,
             'seed_removed' as change,
             null as column_name,
             null as data_type,
@@ -224,6 +231,7 @@ with
     sources_added as (
         select
             cur.node_id,
+            cur.command_invocation_id,
             'source_added' as change,
             null as column_name,
             null as data_type,
@@ -240,6 +248,7 @@ with
     sources_removed as (
         select
             pre.node_id,
+            pre.command_invocation_id,
             'source_removed' as change,
             null as column_name,
             null as data_type,
@@ -257,6 +266,7 @@ with
     snapshots_added as (
         select
             cur.node_id,
+            cur.command_invocation_id,
             'snapshot_added' as change,
             null as column_name,
             null as data_type,
@@ -273,6 +283,7 @@ with
     snapshots_removed as (
         select
             pre.node_id,
+            pre.command_invocation_id,
             'snapshot_removed' as change,
             null as column_name,
             null as data_type,
@@ -290,6 +301,7 @@ with
     columns_removed_filter_deleted_tables as (
         select
             removed.node_id,
+            removed.command_invocation_id,
             removed.change,
             removed.column_name,
             removed.data_type,
@@ -303,6 +315,7 @@ with
     all_changes as (
         select
             node_id,
+            command_invocation_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -315,6 +328,7 @@ with
         union all
         select
             node_id,
+            command_invocation_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -327,6 +341,7 @@ with
         union all
         select
             node_id,
+            command_invocation_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -339,6 +354,7 @@ with
         union all
         select
             node_id,
+            command_invocation_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -351,6 +367,7 @@ with
         union all
         select
             node_id,
+            command_invocation_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -363,6 +380,7 @@ with
         union all
         select
             node_id,
+            command_invocation_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -375,6 +393,7 @@ with
         union all
         select
             node_id,
+            command_invocation_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -387,6 +406,7 @@ with
         union all
         select
             node_id,
+            command_invocation_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -399,6 +419,7 @@ with
         union all
         select
             node_id,
+            command_invocation_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -411,6 +432,7 @@ with
         union all
         select
             node_id,
+            command_invocation_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -423,6 +445,7 @@ with
         union all
         select
             node_id,
+            command_invocation_id,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=1) }} as resource_type,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=2) }} as project,
             {{ dbt.split_part(string_text='node_id', delimiter_text="'.'", part_number=3) }} as resource_name,
@@ -435,4 +458,16 @@ with
 
     )
 
-select distinct * from all_changes
+select distinct
+    {{ dbt_utils.generate_surrogate_key(["command_invocation_id", "node_id"]) }} as execution_key,
+    node_id,
+    command_invocation_id,
+    resource_type,
+    project,
+    resource_name,
+    change,
+    column_name,
+    data_type,
+    pre_data_type,
+    detected_at
+from all_changes
