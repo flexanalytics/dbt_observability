@@ -19,6 +19,7 @@ select
         cast(null as {{ type_array() }}) as freshness
     {% else %}
         cast(null as {{ type_json() }}) as freshness
-    {% endif %}
+    {% endif %},
+    cast(null as {{ type_int() }}) as total_rowcount
 from dummy_cte
 where 1 = 0
