@@ -1,4 +1,4 @@
-{% macro upload_columns(graph, path=None, materialization=None) -%}
+{% macro upload_columns(graph, path=None, materialization=[]) -%}
     {% set models = dbt_observability.get_models_list(graph, path, materialization) %}
     {{ return(adapter.dispatch('get_columns_dml_sql', 'dbt_observability')(models)) }}
 {%- endmacro %}
@@ -37,11 +37,8 @@
             {{ return(model_config_value) }}
         {%- endif %}
     {% endif %}
-    {% set projectVar = var("dbt_observability:" ~ argument_name, "None") %}
-    {% if projectVar %}
-        {{ return(projectVar) }}
-    {% endif %}
-    {{ return(none) }}
+    {% set projectVar = var("dbt_observability:" ~ argument_name, None) %}
+    {{ return(projectVar) }}
 {% endmacro %}
 
 {% macro is_metric(column, model) %}

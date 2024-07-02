@@ -53,7 +53,7 @@ vars:
   "dbt_observability:column_stats_type": "DOC"
   "dbt_observability:column_values_max": 10
   "dbt_observability:path": # must be in the form of "dbt_observability:path": "path/subpath/" or "dbt_observability:path":
-  "dbt_observability:materialization": table # must be one of "table", "view", "incremental", "ephemeral" or "dbt_observability:materialization":
+  "dbt_observability:materialization": ["table"] # must be one of "table", "view", "incremental", "ephemeral" or "dbt_observability:materialization":
 ...
 
 models:

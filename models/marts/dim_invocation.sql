@@ -1,3 +1,8 @@
+{{
+    config(
+        enabled=var('dbt_observability:marts_enabled', true)
+    )
+}}
 with
     invocation as (
         select

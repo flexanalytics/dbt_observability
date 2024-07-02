@@ -1,3 +1,8 @@
+{{
+    config(
+        enabled=var('dbt_observability:marts_enabled', true)
+    )
+}}
 with
 
     _executions as (

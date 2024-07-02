@@ -1,4 +1,4 @@
-{% macro upload_models(graph, path=None, materialization=None) -%}
+{% macro upload_models(graph, path=None, materialization=[]) -%}
     {% set models = dbt_observability.get_models_list(graph, path, materialization) %}
     {{ return(adapter.dispatch('get_models_dml_sql', 'dbt_observability')(models)) }}
 {%- endmacro %}
