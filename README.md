@@ -26,18 +26,18 @@ The package currently supports BigQuery, Databricks, Spark, Snowflake, Redshift,
 ```
 packages:
   - package: flexanalytics/dbt_observability
-    version: 1.0.0
+    version: 2.5.0
 ```
 
 2. Run `dbt deps` to install the package
 
 3. Add an on-run-end hook to your `dbt_project.yml`: `on-run-end: "{{ dbt_observability.upload_results(results) }}"`
-(We recommend adding a conditional here so that the upload only occurs in your production environment, such as `on-run-end: "{% if target.name == 'prod' %}{{ dbt_observability.upload_results(results) }}{% endif %}"`)
+(We recommend using the `"dbt_observability:environments": ["prod"]` variable in your project to control which environments this package runs in [currently defaults to `["prod"]`])
 
-4. If you are using [selectors](https://docs.getdbt.com/reference/node-selection/syntax), be sure to include the `dbt_observability` models in your dbt invocation step, for example:
+1. If you are using [selectors](https://docs.getdbt.com/reference/node-selection/syntax), be sure to include the `dbt_observability` models in your dbt invocation step, for example:
 `dbt build --select some_model dbt_observability`
 
-5. Run your project!
+1. Run your project!
 
 > :construction_worker: Always run the dbt_observability models in every dbt invocation which uses the `upload_results` macro. This ensures that the source models always have the correct fields in case of an update.
 
@@ -49,24 +49,25 @@ The following configuration can be used to specify where the raw (sources) data 
 
 vars:
 ...
-  "dbt_observability:enabled": true
-  "dbt_observability:column_stats_type": "DOC"
-  "dbt_observability:column_values_max": 10
-  "dbt_observability:path": # must be in the form of "dbt_observability:path": "path/subpath/" or "dbt_observability:path":
-  "dbt_observability:materialization": ["table"] # must be one of "table", "view", "incremental", "ephemeral" or "dbt_observability:materialization":
+  "dbt_observability:tracking_enabled": true # optional, create observability base tables - default is true
+  "dbt_observability:marts_enabled": true # optional, create observability marts - default is true
+  "dbt_observability:environments": ["prod"] # optional, default is ["prod"]
+  "dbt_observability:path": "models/marts/" # optional, which paths should observability monitor. must be in the form of "dbt_observability:path": "path/subpath/" - default is `None`, will run on all paths in the project
+  "dbt_observability:materialization": ["table"] # optional, which model materialization should observability run on. must be array of "table", "view", "incremental", "ephemeral" - default is ["table"]
+  "dbt_obseravibility:track_source_rowcounts": false # optional, track source rowcounts - default is false [depending on your dbms, this can be slow and resource intensive as it may require a full table scan if the dbms does not store rowcounts in information_schema.tables]
 ...
 
 models:
   ...
   dbt_observability:
     +database: your_destination_database # optional, default is your target database
-    +schema: your_destination_schema # optional, default is your target schema
+    +schema: your_destination_schema # optional, default is `observability`
     staging:
       +database: your_destination_database # optional, default is your target database
-      +schema: your_destination_schema # optional, default is your target schema
+      +schema: your_destination_schema # optional, default is `observability`
     sources:
       +database: your_sources_database # optional, default is your target database
-      +schema: your sources_database # optional, default is your target schema
+      +schema: your sources_database # optional, default is `observability`
 ```
 
 Note that model materializations and `on_schema_change` configs are defined in this package's `dbt_project.yml`, so do not set them globally in your `dbt_project.yml` ([see docs on configuring packages](https://docs.getdbt.com/docs/building-a-dbt-project/package-management#configuring-packages)):
