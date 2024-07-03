@@ -25,20 +25,27 @@
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(8) }},
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(9) }},
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(10) }},
-            {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(11)) }}
-            {{ adapter.dispatch('column_identifier', 'dbt_observability')(12) }},
+            {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(11)) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(12) }}
         from values
 
         {% endif %}
 
         {% for source in sources -%}
-            {% if target.type == 'snowflake' and var('dbt_observability:track_source_rowcounts', false) %}
+        {% if var('dbt_observability:track_source_rowcounts', false) %}
+            {% if target.type == 'snowflake' %}
                 {%- set rowcount_query %}
                 select row_count as source_rowcount
                 from {{ source.database }}.information_schema.tables
-                where lower(table_name) = lower('{{ source.source_name }}')
+                where lower(table_name) = lower('{{ source.identifier }}')
                     and lower(table_schema) = lower('{{ source.schema }}')
                 {%- endset -%}
+            {% else %}
+                {%- set rowcount_query %}
+                select count(*) as source_rowcount
+                from {{ source.database }}.{{ source.schema }}.{{ source.identifier }}
+                {%- endset -%}
+            {% endif %}
             {%- set results = run_query(rowcount_query) -%}
             {%- set source_rowcount = results.columns[0].values()[0] -%}
         {% else %}
@@ -72,6 +79,18 @@
     {% if sources != [] %}
         {% set source_values %}
             {% for source in sources -%}
+            {% if var('dbt_observability:track_source_rowcounts', false) %}
+                {%- set rowcount_query %}
+                select row_count as source_rowcount
+                from {{ source.database }}.information_schema.tables
+                where lower(table_name) = lower('{{ source.identifier }}')
+                    and lower(table_schema) = lower('{{ source.schema }}')
+                {%- endset -%}
+            {%- set results = run_query(rowcount_query) -%}
+            {%- set source_rowcount = results.columns[0].values()[0] -%}
+            {% else %}
+                {%- set source_rowcount = 0 -%}
+            {% endif %}
                 (
                     '{{ invocation_id }}', {# command_invocation_id #}
                     '{{ source.unique_id }}', {# node_id #}
@@ -83,7 +102,8 @@
                     '{{ source.name }}', {# name #}
                     '{{ source.identifier }}', {# identifier #}
                     '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(source.loaded_at_field) }}', {# loaded_at_field #}
-                    parse_json('{{ tojson(source.freshness) }}')  {# freshness #}
+                    parse_json('{{ tojson(source.freshness) }}'), {# freshness #}
+                    {{ 0 if source_rowcount is not defined else source_rowcount }} {# source_rowcount #}
                 )
                 {%- if not loop.last %},{%- endif %}
             {%- endfor %}
