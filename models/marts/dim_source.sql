@@ -18,7 +18,8 @@ with
             name,
             identifier,
             loaded_at_field,
-            freshness
+            freshness,
+            total_rowcount
         from {{ ref('int_source') }}
     )
 
@@ -35,5 +36,6 @@ select
     name,
     identifier,
     loaded_at_field,
-    freshness
+    freshness,
+    total_rowcount
 from source
