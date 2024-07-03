@@ -26,3 +26,5 @@ dbt_observability:
       description: '{{ doc("loaded_at_field") }}'
     - name: freshness
       description: '{{ doc("freshness") }}'
+    - name: total_rowcount
+      description: '{{ doc("total_rowcount") }}'

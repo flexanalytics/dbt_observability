@@ -72,3 +72,8 @@ models:
     data_type: text
     meta:
       label: Freshness
+  - name: total_rowcount
+    description: ''
+    data_type: text
+    meta:
+      label: Total Rowcount

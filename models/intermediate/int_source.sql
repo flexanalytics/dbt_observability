@@ -17,5 +17,6 @@ select
     name,
     identifier,
     loaded_at_field,
-    freshness
+    freshness,
+    total_rowcount
 from {{ ref('stg_source') }}

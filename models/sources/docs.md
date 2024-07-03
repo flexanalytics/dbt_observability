@@ -148,6 +148,12 @@ The specified freshness of the source model.
 
 {% enddocs %}
 
+{% docs total_rowcount %}
+
+The total rowcount of the source model.
+
+{% enddocs %}
+
 {% docs url %}
 
 The URL of the BI tool where the data defined by the exposure can be viewed.
