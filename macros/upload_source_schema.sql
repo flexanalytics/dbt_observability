@@ -14,16 +14,18 @@
     {% set source_schemas = source_schemas | unique %}
     {% set source_databases = [] %}
     {% for source in sources %}
-        {% do source_databases.append(source.database) %}
+        {% do source_databases.append((source.database, source.package_name, source.source_name)) %}
     {% endfor %}
     {% set source_databases = source_databases | unique %}
     {% set source_info_query %}
     {% for database in source_databases %}
     select
-        column_name,
-        table_name,
-        data_type
-    from {{ database }}.information_schema.columns
+        '{{ database[1] }}' as source_name,
+        '{{ database[2] }}' as package_name,
+        lower(column_name) as column_name,
+        lower(table_name) as table_name,
+        lower(data_type) as data_type
+    from {{ database[0] }}.information_schema.columns
     where lower(table_schema) in (
         {% for schema in source_schemas -%}
             '{{ schema }}'
@@ -66,11 +68,12 @@
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(18) }}
         from values
         {% endif %}
-        {% set columns, tables, types = result.columns[0].values(), result.columns[1].values(), result.columns[2].values() %}
-        {% for column, table, type in zip(columns, tables, types) %}
+
+        {% set names, packages, columns, tables, types = result.columns[0].values(), result.columns[1].values(), result.columns[2].values(), result.columns[3].values(), result.columns[4].values() %}
+        {% for name, package, column, table, type in zip(names, packages, columns, tables, types) %}
             (
                 '{{ invocation_id }}',
-                '{{ "source." ~ target.profile_name ~ "." ~ table }}',
+                '{{ "source." ~ name ~ "." ~ package ~ "." ~ table }}',
                 '{{ column }}',
                 '{{ type }}',
                 null,
