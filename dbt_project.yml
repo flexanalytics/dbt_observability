@@ -1,7 +1,7 @@
 name: 'dbt_observability'
 version: '1.3.5'
 config-version: 2
-require-dbt-version: ">=1.3.0"
+require-dbt-version: ">=1.7.0"
 profile: "dbt_observability"
 
 clean-targets: # folders to be removed by `dbt clean`
@@ -20,9 +20,6 @@ models:
       +full_refresh: false
     +access: public
     staging:
-      +schema: observability
-      +materialized: view
-    views:
       +schema: observability
       +materialized: view
 

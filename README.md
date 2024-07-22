@@ -50,7 +50,6 @@ The following configuration can be used to specify where the raw (sources) data 
 vars:
 ...
   "dbt_observability:tracking_enabled": true # optional, create observability base tables - default is true
-  "dbt_observability:marts_enabled": true # optional, create observability marts - default is true
   "dbt_observability:environments": ["prod"] # optional, default is ["prod"]
   "dbt_observability:path": "models/marts/" # optional, which paths should observability monitor. must be in the form of "dbt_observability:path": "path/subpath/" - default is `None`, will run on all paths in the project
   "dbt_observability:materialization": ["table"] # optional, which model materialization should observability run on. must be array of "table", "view", "incremental", "ephemeral" - default is ["table"]
