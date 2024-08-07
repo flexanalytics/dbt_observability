@@ -17,7 +17,7 @@ select
     curr.current_rowcount,
     hist.average_rowcount,
     curr.current_rowcount - coalesce(hist.average_rowcount, 0) as rowcount_diff,
-    cast(rowcount_diff as numeric(19, 6)) / cast(curr.current_rowcount as numeric(19, 6)) as rowcount_diff_pct
+    (cast(curr.current_rowcount as numeric(19, 6)) - coalesce(hist.average_rowcount, 0)) / cast(hist.average_rowcount as numeric(19, 6)) as rowcount_diff_pct
 from curr
 left outer join hist
     on 1 = 1
