@@ -4,7 +4,7 @@ with
     hist as (
         select avg(total_rowcount) as average_rowcount
         from {{ ref('sources') }} -- {{ database }}.{{ target.schema }}_observability.sources
-        where {{ dbt.concat(['"', "database_name", '"."' , "source_name", '"."', "identifier"]) }} = '{{ model }}'
+        where {{ dbt.concat(['\'"\'', "database_name", '\'"."\'' , "source_name", '\'"."\'', "identifier", '\'"\'']) }} = '{{ model }}'
             and coalesce(total_rowcount, 0) > 0
     ),
 
