@@ -53,7 +53,7 @@ vars:
   "dbt_observability:environments": ["prod"] # optional, default is ["prod"]
   "dbt_observability:path": "models/marts/" # optional, which paths should observability monitor. must be in the form of "dbt_observability:path": "path/subpath/" - default is `None`, will run on all paths in the project
   "dbt_observability:materialization": ["table"] # optional, which model materialization should observability run on. must be array of "table", "view", "incremental", "ephemeral" - default is ["table"]
-  "dbt_obseravibility:track_source_rowcounts": false # optional, track source rowcounts - default is false [depending on your dbms, this can be slow and resource intensive as it may require a full table scan if the dbms does not store rowcounts in information_schema.tables]
+  "dbt_observability:track_source_rowcounts": false # optional, track source rowcounts - default is false [depending on your dbms, this can be slow and resource intensive as it may require a full table scan if the dbms does not store rowcounts in information_schema.tables]
 ...
 
 models:
