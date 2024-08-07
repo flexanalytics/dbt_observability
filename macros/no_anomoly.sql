@@ -21,7 +21,7 @@ select
 from curr
 left outer join hist
     on 1 = 1
-where rowcount_diff_pct > .05 -- TODO: pass as parameter
-    or rowcount_diff_pct < -.05
+where abs(rowcount_diff_pct)
+    > {{ var('dbt_observability:rowcount_diff_threshold_pct', '.05') }}
 
 {% endtest %}
