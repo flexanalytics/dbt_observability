@@ -5,7 +5,7 @@ with
         select avg(total_rowcount) as average_rowcount
         from {{ ref('sources') }} -- {{ database }}.{{ target.schema }}_observability.sources
         where (database_name || '.' || source_name || '.' || identifier) = '{{ model }}'
-            and total_rowcount is not null
+            and coalesce(total_rowcount, 0) > 0
     ),
 
     curr as (
