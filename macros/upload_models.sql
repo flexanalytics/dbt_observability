@@ -33,7 +33,7 @@
 
         {% for model in models -%}
 
-            {% if model.config.materialized == "table" %}
+            {% if model.config.materialized in ["table","incremental"] %}
                 {% if target.type == 'snowflake' %}
                     {%- set rowcount_query %}
                     select row_count as model_rowcount
@@ -84,7 +84,7 @@
         {% set model_values %}
             {% for model in models -%}
 
-                {% if model.config.materialized == "table" %}
+                {% if model.config.materialized in ["table","incremental"] %}
                     {%- set rowcount_query %}
                     select count(*) as model_rowcount from {{ model.schema }}.{{ model.name }}
                     {%- endset -%}
