@@ -16,7 +16,7 @@
 
 {% macro upload_results(results) -%}
     {% set path = var('dbt_observability:path', None) %}
-    {% set materialization = var('dbt_observability:materialization', ['table']) %}
+    {% set materialization = var('dbt_observability:materialization', ['table','incremental']) %}
     {% set target_names = var('dbt_observability:environments', ["prod"]) %}
     {% if target.name in target_names %}
 
