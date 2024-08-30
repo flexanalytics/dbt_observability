@@ -1,0 +1,52 @@
+name: Update Stable Tags
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write  # Grants read/write access to the repository content, including pushing tags
+
+jobs:
+  update-stable-tags:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Extract Release Version
+        id: extract_version
+        run: |
+          version="${GITHUB_REF##*/}"
+          major=$(echo $version | cut -d. -f1)
+          minor=$(echo $version | cut -d. -f2)
+          patch=$(echo $version | cut -d. -f3)
+          echo "::set-output name=major::$major"
+          echo "::set-output name=minor::$minor"
+          echo "::set-output name=patch::$patch"
+
+      - name: Update Major Stable Tag
+        if: steps.extract_version.outputs.major == '1'
+        run: |
+          git tag -f v${{ steps.extract_version.outputs.major }}-stable
+          git push origin v${{ steps.extract_version.outputs.major }}-stable --force
+
+      - name: Update Minor Stable Tag
+        if: steps.extract_version.outputs.minor != ''
+        run: |
+          git tag -f v${{ steps.extract_version.outputs.major }}.${{ steps.extract_version.outputs.minor }}-stable
+          git push origin v${{ steps.extract_version.outputs.major }}.${{ steps.extract_version.outputs.minor }}-stable --force
+
+      - name: Notify Success
+        if: always()
+        run: echo "Tags have been updated successfully."
+
+      - name: Error Handling
+        if: failure()
+        run: echo "Failed to update tags."
