@@ -7,46 +7,56 @@
 {%- endmacro %}
 
 {% macro default__get_source_columns_info(sources) -%}
-    {% set source_schemas = [] %}
+    {% set database_dict = {} %}
+
     {% for source in sources %}
-        {% do source_schemas.append(source.schema) %}
+        {% if database_dict[source.database] is not defined %}
+            {% set _ = database_dict.update({
+                source.database: {}
+            }) %}
+        {% endif %}
+        
+        {% if database_dict[source.database][source.schema] is not defined %}
+            {% set _ = database_dict[source.database].update({
+                source.schema: {
+                    'tables': [],
+                    'source_name': source.source_name,
+                    'package_name': source.package_name
+                }
+            }) %}
+        {% endif %}
+        
+        {% set _ = database_dict[source.database][source.schema]['tables'].append(source.identifier) %}
     {% endfor %}
-    {% set source_schemas = source_schemas | unique %}
-    {% set source_databases = [] %}
-    {% for source in sources %}
-        {% do source_databases.append((source.database, source.package_name, source.source_name)) %}
-    {% endfor %}
-    {% set source_databases = source_databases | unique %}
+
     {% set source_info_query %}
-    {% for database in source_databases %}
-    select
-        '{{ database[1] }}' as source_name,
-        '{{ database[2] }}' as package_name,
-        lower(column_name) as column_name,
-        lower(table_name) as table_name,
-        lower(data_type) as data_type
-    from {{ database[0] }}.information_schema.columns
-    where lower(table_schema) in (
-        {% for schema in source_schemas -%}
-            '{{ schema }}'
-            {%- if not loop.last %}, {% endif %}
-        {%- endfor %}
-    )
-    and lower(table_name) in (
-        {% for source in sources -%}
-            '{{ source.identifier }}'
-            {%- if not loop.last %}, {% endif %}
-        {%- endfor %}
-    )
-    order by table_name, ordinal_position
-    {%- if not loop.last %} union all {% endif %}
-    {% endfor %}
+        {% for database, schemas in database_dict.items() %}
+            {% for schema, info in schemas.items() %}
+                
+        select
+            '{{ info.package_name }}' as package_name,
+            '{{ info.source_name }}' as source_name,
+            lower(column_name) as column_name,
+            lower(table_name) as table_name,
+            lower(data_type) as data_type
+        from {{ database }}.information_schema.columns
+        where lower(table_schema) = '{{ schema }}'
+        and lower(table_name) in (
+                {%- for table in info.tables -%}
+                    '{{ table }}'
+                    {%- if not loop.last %}, {% endif %}
+                {%- endfor %}
+        )
+                {%- if not loop.last %} union all {% endif %}
+            {% endfor %}
+        {% endfor %}
     {%- endset %}
+
     {% set result = run_query(source_info_query) %}
     {% set column_values %}
-    {% if execute %}
-    {% set adapterArr = ['databricks','spark','snowflake'] %}
-        {% if target.type in adapterArr %}
+        {% if execute %}
+            {% set adapterArr = ['databricks','spark','snowflake'] %}
+            {% if target.type in adapterArr %}
         select
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(1) }},
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(2) }},
@@ -69,8 +79,9 @@
         from values
         {% endif %}
 
-        {% set names, packages, columns, tables, types = result.columns[0].values(), result.columns[1].values(), result.columns[2].values(), result.columns[3].values(), result.columns[4].values() %}
-        {% for name, package, column, table, type in zip(names, packages, columns, tables, types) %}
+            {% set names, packages, columns, tables, types = result.columns[0].values(), result.columns[1].values(), result.columns[2].values(), result.columns[3].values(), result.columns[4].values() %}
+            {% for name, package, column, table, type in zip(names, packages, columns, tables, types) %}
+                
             (
                 '{{ invocation_id }}',
                 '{{ "source." ~ name ~ "." ~ package ~ "." ~ table }}',
@@ -91,9 +102,9 @@
                 null,
                 null
             )
-            {%- if not loop.last %},{%- endif %}
-        {% endfor %}
-    {% endif %}
+                {%- if not loop.last %},{%- endif %}
+            {% endfor %}
+        {% endif %}
     {% endset %}
     {{ return (column_values) }}
 
