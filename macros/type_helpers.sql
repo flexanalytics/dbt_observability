@@ -78,8 +78,13 @@
    varchar(16777216)
 {% endmacro %}
 
+{% macro sqlserver__type_string() %}
+   varchar(8000)
+{% endmacro %}
+
 {#- TIMESTAMP -#}
 
 {% macro sqlserver__type_timestamp() %}
    datetime
 {% endmacro %}
+
