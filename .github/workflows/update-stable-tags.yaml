@@ -32,7 +32,7 @@ jobs:
           echo "::set-output name=patch::$patch"
 
       - name: Update Major Stable Tag
-        if: steps.extract_version.outputs.major == '1'
+        if: steps.extract_version.outputs.major != ''
         run: |
           git tag -f v${{ steps.extract_version.outputs.major }}-stable
           git push origin v${{ steps.extract_version.outputs.major }}-stable --force
