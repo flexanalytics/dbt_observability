@@ -32,8 +32,10 @@
         {% endif %}
 
         {% for model in models -%}
+            {%- set model_relation = adapter.get_relation(database=model.database, schema=model.schema, identifier=model.name) -%}
+            {% set table_exists=model_relation is not none %}
 
-            {% if model.config.materialized in ["table","incremental"] %}
+            {% if table_exists and model.config.materialized in ["table","incremental"] %}
                 {% if target.type == 'snowflake' %}
                     {%- set rowcount_query %}
                     select row_count as model_rowcount
@@ -83,8 +85,10 @@
     {% if models != [] %}
         {% set model_values %}
             {% for model in models -%}
+            {%- set model_relation = adapter.get_relation(database=model.database, schema=model.schema, identifier=model.name) -%}
+            {% set table_exists=model_relation is not none %}
 
-                {% if model.config.materialized in ["table","incremental"] %}
+            {% if table_exists and model.config.materialized in ["table","incremental"] %}
                     {%- set rowcount_query %}
                     select count(*) as model_rowcount from {{ model.schema }}.{{ model.name }}
                     {%- endset -%}
