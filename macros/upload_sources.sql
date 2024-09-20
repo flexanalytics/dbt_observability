@@ -33,21 +33,35 @@
 
         {% for source in sources -%}
         {% if var('dbt_observability:track_source_rowcounts', false) %}
-            {% if target.type == 'snowflake' %}
-                {%- set rowcount_query %}
-                select row_count as source_rowcount
-                from {{ source.database }}.information_schema.tables
-                where lower(table_name) = lower('{{ source.identifier }}')
-                    and lower(table_schema) = lower('{{ source.schema }}')
-                {%- endset -%}
+
+            {%- set source_relation = adapter.get_relation(database=source.database, schema=source.schema, identifier=source.identifier) -%}
+            {% set table_exists=source_relation is not none %}
+
+            {% if table_exists %}
+
+                {% if target.type == 'snowflake' %}
+                    {%- set rowcount_query %}
+                    select row_count as source_rowcount
+                    from {{ source.database }}.information_schema.tables
+                    where lower(table_name) = lower('{{ source.identifier }}')
+                        and lower(table_schema) = lower('{{ source.schema }}')
+                    {%- endset -%}
+                {% else %}
+                    {%- set rowcount_query %}
+                    select count(*) as source_rowcount
+                    from {{ source.database }}.{{ source.schema }}.{{ source.identifier }}
+                    {%- endset -%}
+                {% endif %}
+                {%- set results = run_query(rowcount_query) -%}
+                {%- set source_rowcount = results.columns[0].values()[0] -%}
+
             {% else %}
-                {%- set rowcount_query %}
-                select count(*) as source_rowcount
-                from {{ source.database }}.{{ source.schema }}.{{ source.identifier }}
-                {%- endset -%}
+
+                {%- set source_rowcount = 0 -%}
+                {%- do log("Warning, source does not exist: " ~ source.identifier, info=false) -%}
+
             {% endif %}
-            {%- set results = run_query(rowcount_query) -%}
-            {%- set source_rowcount = results.columns[0].values()[0] -%}
+
         {% else %}
             {%- set source_rowcount = 0 -%}
         {% endif %}
