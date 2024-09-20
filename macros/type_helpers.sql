@@ -59,7 +59,7 @@
 {% endmacro %}
 
 {% macro default__type_string() %}
-   varchar(65535)
+   varchar(max)
 {% endmacro %}
 
 {% macro postgres__type_string() %}
@@ -68,10 +68,6 @@
 
 {% macro bigquery__type_string() %}
    string
-{% endmacro %}
-
-{% macro redshift__type_string() %}
-   varchar(max)
 {% endmacro %}
 
 {% macro snowflake__type_string() %}
@@ -83,3 +79,4 @@
 {% macro sqlserver__type_timestamp() %}
    datetime
 {% endmacro %}
+
