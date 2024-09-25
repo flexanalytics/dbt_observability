@@ -1,6 +1,6 @@
-{% macro upload_columns(graph, path=None, materialization=[]) -%}
+{% macro upload_columns(columns, path=None, materialization=[]) -%}
     {% set models = dbt_observability.get_models_list(graph, path, materialization) %}
-    {{ return(adapter.dispatch('get_columns_dml_sql', 'dbt_observability')(models)) }}
+    {{ return(adapter.dispatch('get_columns_dml_sql', 'dbt_observability')(columns, models)) }}
 {%- endmacro %}
 
 {% macro get_observability_config_from_node(node) %}
@@ -55,7 +55,7 @@
 
 {% endmacro %}
 
-{% macro default__get_columns_dml_sql(models) -%}
+{% macro default__get_columns_dml_sql(columns, models) -%}
 
     {% if models != [] %}
         {% set model_values %}

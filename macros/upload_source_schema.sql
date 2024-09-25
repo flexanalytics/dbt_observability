@@ -1,12 +1,12 @@
-{% macro upload_source_schema(graph) -%}
+{% macro upload_source_schema(graph, columns) -%}
     {% set sources = [] %}
     {% for node in graph.sources.values() %}
         {% do sources.append(node) %}
     {% endfor %}
-    {{ return(adapter.dispatch('get_source_columns_info', 'dbt_observability')(sources)) }}
+    {{ return(adapter.dispatch('get_source_columns_info', 'dbt_observability')(columns, sources)) }}
 {%- endmacro %}
 
-{% macro default__get_source_columns_info(sources) -%}
+{% macro default__get_source_columns_info(columns, sources) -%}
     {% set database_dict = {} %}
 
     {% for source in sources %}
@@ -15,7 +15,7 @@
                 source.database: {}
             }) %}
         {% endif %}
-        
+
         {% if database_dict[source.database][source.schema] is not defined %}
             {% set _ = database_dict[source.database].update({
                 source.schema: {
@@ -25,34 +25,10 @@
                 }
             }) %}
         {% endif %}
-        
+
         {% set _ = database_dict[source.database][source.schema]['tables'].append(source.identifier) %}
     {% endfor %}
 
-    {% set source_info_query %}
-        {% for database, schemas in database_dict.items() %}
-            {% for schema, info in schemas.items() %}
-                
-        select
-            '{{ info.package_name }}' as package_name,
-            '{{ info.source_name }}' as source_name,
-            lower(column_name) as column_name,
-            lower(table_name) as table_name,
-            lower(data_type) as data_type
-        from {{ database }}.information_schema.columns
-        where lower(table_schema) = '{{ schema }}'
-        and lower(table_name) in (
-                {%- for table in info.tables -%}
-                    '{{ table }}'
-                    {%- if not loop.last %}, {% endif %}
-                {%- endfor %}
-        )
-                {%- if not loop.last %} union all {% endif %}
-            {% endfor %}
-        {% endfor %}
-    {%- endset %}
-
-    {% set result = run_query(source_info_query) %}
     {% set column_values %}
         {% if execute %}
             {% set adapterArr = ['databricks','spark','snowflake'] %}
@@ -79,14 +55,13 @@
         from values
         {% endif %}
 
-            {% set names, packages, columns, tables, types = result.columns[0].values(), result.columns[1].values(), result.columns[2].values(), result.columns[3].values(), result.columns[4].values() %}
-            {% for name, package, column, table, type in zip(names, packages, columns, tables, types) %}
-                
+            {% for column in columns %}
+
             (
                 '{{ invocation_id }}',
-                '{{ "source." ~ name ~ "." ~ package ~ "." ~ table }}',
-                '{{ column }}',
-                '{{ type }}',
+                'source.{{ column.source_name }}.{{ column.package_name }}.{{ column.table_name }}',
+                '{{ column.column_name }}',
+                '{{ column.data_type }}',
                 null,
                 null,
                 null,
