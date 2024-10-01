@@ -100,8 +100,12 @@
                 {% do lowerCols.update({k.lower(): v}) %}
             {% endfor %}
 
-            {% set relation = dbt_observability.get_relation( model.name ) %}
-            {%- set columns = adapter.get_columns_in_relation(relation) -%}
+            {%- set relation = adapter.get_relation(database=model.database, schema=model.schema, identifier=model.name) -%}
+            {% set table_exists=relation is not none %}
+
+            {% if table_exists %}
+                {%- set columns = adapter.get_columns_in_relation(relation) -%}
+            {% endif %}
 
             {% set statsType = dbt_observability.get_observability_value('column_stats_type', model) %}
 
