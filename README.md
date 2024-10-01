@@ -33,6 +33,10 @@ packages:
 
 3. Add an on-run-end hook to your `dbt_project.yml`: `on-run-end: "{{ dbt_observability.upload_results(results) }}"`
 (We recommend using the `"dbt_observability:environments": ["prod"]` variable in your project to control which environments this package runs in [currently defaults to `["prod"]`])
+> [!NOTE]
+> dbt Cloud defaults all targets to `default`, if you want observability to run on a dbt cloud job you will need to ensure the corresponding target is updated. [More information can be found here](https://docs.getdbt.com/docs/build/custom-target-names).
+>
+> The same functionality can be expected when developing in dbt core via the cli, you will need to ensure that dbt_observability's target matches the relevant target names in your profiles.yml.
 
 1. If you are using [selectors](https://docs.getdbt.com/reference/node-selection/syntax), be sure to include the `dbt_observability` models in your dbt invocation step, for example:
 `dbt build --select some_model dbt_observability`
