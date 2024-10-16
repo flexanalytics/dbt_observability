@@ -65,6 +65,15 @@
     {%- endset %}
 
     {% set result = run_query(source_info_query) %}
+        {% for row in result %}
+            {% do source_columns.append({
+                'name': row[2],
+                'data_type': row[4],
+                'table_name': row[3],
+                'source_name': row[1],
+                'package_name': row[0]
+            }) %}
+        {% endfor %}
+        {{ return(source_columns) }}
     {% endif %}
-    {{ return(result | list) }}
 {% endmacro %}
