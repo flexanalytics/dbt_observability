@@ -57,7 +57,7 @@
 {% endmacro %}
 
 {% macro duckdb__type_array() %}
-   list
+   varchar[]
 {% endmacro %}
 
 {#- STRING -#}
