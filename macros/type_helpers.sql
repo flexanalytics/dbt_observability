@@ -30,6 +30,10 @@
    varchar(max)
 {% endmacro %}
 
+{% macro duckdb__type_json() %}
+   JSON
+{% endmacro %}
+
 {#- ARRAY -#}
 
 {% macro type_array() %}
@@ -52,6 +56,10 @@
    varchar(max)
 {% endmacro %}
 
+{% macro duckdb__type_array() %}
+   list
+{% endmacro %}
+
 {#- STRING -#}
 
 {% macro type_string() %}
@@ -72,6 +80,10 @@
 
 {% macro snowflake__type_string() %}
    varchar(16777216)
+{% endmacro %}
+
+{% macro duckdb__type_string() %}
+   varchar
 {% endmacro %}
 
 {#- TIMESTAMP -#}
