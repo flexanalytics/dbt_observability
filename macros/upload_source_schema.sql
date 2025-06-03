@@ -60,7 +60,7 @@
             (
                 '{{ invocation_id }}',
                 'source.{{ column.source_name }}.{{ column.package_name }}.{{ column.table_name }}',
-                '{{ column.column_name }}',
+                '{{ column.name }}',
                 '{{ column.data_type }}',
                 null,
                 null,
