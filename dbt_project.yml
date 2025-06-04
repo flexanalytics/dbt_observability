@@ -26,5 +26,3 @@ models:
 dispatch:
   - macro_namespace: dbt
     search_order: ['dbt_observability', 'dbt']
-  - macro_namespace: dbt_utils
-    search_order: ['dbt_observability', 'dbt_utils']
