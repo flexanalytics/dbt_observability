@@ -1,6 +1,6 @@
 {% macro upload_snapshots(graph) -%}
     {% set snapshots = [] %}
-    {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "snapshot") | selectattr("package_name", "equalto", project_name) %}
+    {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "snapshot") %}
         {% do snapshots.append(node) %}
     {% endfor %}
     {{ return(adapter.dispatch('get_snapshots_dml_sql', 'dbt_observability')(snapshots)) }}

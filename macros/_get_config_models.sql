@@ -1,6 +1,6 @@
 {% macro get_models_list(graph, path=None, materialization=[]) %}
     {% set models = [] %}
-        {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "model") | selectattr("package_name", "equalto", project_name) %}
+        {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "model") %}
             {% set orig_path = (node.original_file_path | replace('\\', '/')) %}
             {% if path and not materialization %}
                 {% if (path + node.name + ".sql") == orig_path %}

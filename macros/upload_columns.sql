@@ -96,7 +96,7 @@
         {% for model in new_list -%}
 
             {% set lowerCols = {} %}
-            {% for k, v in model.columns.items()  %}
+            {% for k, v in model.columns.items() %}
                 {% do lowerCols.update({k.lower(): v}) %}
             {% endfor %}
 
