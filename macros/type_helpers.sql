@@ -78,6 +78,10 @@
    string
 {% endmacro %}
 
+{% macro redshift__type_string() %}
+   varchar(65535)
+{% endmacro %}
+
 {% macro snowflake__type_string() %}
    varchar(16777216)
 {% endmacro %}
