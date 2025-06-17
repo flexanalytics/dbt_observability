@@ -1,6 +1,7 @@
 {% macro upload_tests(graph) -%}
+    {% set packages = var('dbt_observability:projects', [project_name]) %}
     {% set tests = [] %}
-    {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "test") %}
+    {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "test") | selectattr("package_name", "in", packages) %}
         {% do tests.append(node) %}
     {% endfor %}
     {{ return(adapter.dispatch('get_tests_dml_sql', 'dbt_observability')(tests)) }}

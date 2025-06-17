@@ -1,7 +1,10 @@
 {% macro upload_all_executions(results) -%}
+    {% set packages = var('dbt_observability:projects', [project_name]) %}
     {% set executions = [] %}
     {% for result in results  %}
+        {% if result.node.package_name in packages %}
             {% do executions.append(result) %}
+        {% endif %}
     {% endfor %}
     {{ return(adapter.dispatch('get_all_executions_dml_sql', 'dbt_observability')(executions)) }}
 {%- endmacro %}
