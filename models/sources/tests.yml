@@ -12,6 +12,8 @@ dbt_observability:
       description: '{{ doc("run_started_at") }}'
     - name: name
       description: '{{ doc("name") }}'
+    - name: description
+      description: '{{ doc("description") }}'
     - name: depends_on_nodes
       description: '{{ doc("depends_on_nodes") }}'
     - name: package_name
