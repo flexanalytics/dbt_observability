@@ -1,6 +1,7 @@
 {% macro upload_metrics(graph) -%}
+    {% set packages = var('dbt_observability:projects', [project_name]) %}
     {% set metrics = [] %}
-    {% for node in graph.metrics.values() %}
+    {% for node in graph.metrics.values() | selectattr("package_name", "in", packages) %}
         {% do metrics.append(node) %}
     {% endfor %}
     {{ return(adapter.dispatch('get_metrics_dml_sql', 'dbt_observability')(metrics)) }}

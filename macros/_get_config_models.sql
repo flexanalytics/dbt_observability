@@ -1,6 +1,7 @@
 {% macro get_models_list(graph, path=None, materialization=[]) %}
+    {% set packages = var('dbt_observability:projects', [project_name]) %}
     {% set models = [] %}
-        {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "model") %}
+        {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "model") | selectattr("package_name", "in", packages) %}
             {% set orig_path = (node.original_file_path | replace('\\', '/')) %}
             {% if path and not materialization %}
                 {% if (path + node.name + ".sql") == orig_path %}

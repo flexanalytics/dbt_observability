@@ -1,6 +1,7 @@
 {% macro upload_seeds(graph) -%}
+    {% set packages = var('dbt_observability:projects', [project_name]) %}
     {% set seeds = [] %}
-    {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "seed") %}
+    {% for node in graph.nodes.values() | selectattr("resource_type", "equalto", "seed") | selectattr("package_name", "in", packages) %}
         {% do seeds.append(node) %}
     {% endfor %}
     {{ return(adapter.dispatch('get_seeds_dml_sql', 'dbt_observability')(seeds)) }}
