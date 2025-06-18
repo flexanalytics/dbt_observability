@@ -20,12 +20,12 @@
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(2) }},
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(3) }},
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(4) }},
-            {{ adapter.dispatch('column_identifier', 'dbt_observability')(5) }},
-            {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(6)) }},
+            {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(5)) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(6) }},
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(7) }},
-            {{ adapter.dispatch('column_identifier', 'dbt_observability')(8) }},
+            {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(8)) }},
             {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(9)) }},
-            {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(10)) }}
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(10) }}
         from values
 
         {% endif %}
@@ -42,12 +42,12 @@
                 '{{ test.unique_id }}', {# node_id #}
                 '{{ run_started_at }}', {# run_started_at #}
                 '{{ test.name }}', {# name #}
-                '{{ test_description }}', {# description #}
                 '{{ tojson(test.depends_on.nodes) }}', {# depends_on_nodes #}
                 '{{ test.package_name }}', {# package_name #}
                 '{{ test.original_file_path | replace('\\', '\\\\') }}', {# test_path #}
                 '{{ tojson(test.tags) }}', {# tags #}
-                '{{ null if test.test_metadata is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(test.test_metadata)) }}' {# test.test_metadata #}                
+                '{{ null if test.test_metadata is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(test.test_metadata)) }}', {# test.test_metadata #}
+                '{{ test_description }}' {# description #}
             )
             {%- if not loop.last %},{%- endif %}
         {%- endfor %}
@@ -72,12 +72,12 @@
                     '{{ test.unique_id }}', {# node_id #}
                     '{{ run_started_at }}', {# run_started_at #}
                     '{{ test.name }}', {# name #}
-                    '{{ test_description }}', {# description #}
                     {{ tojson(test.depends_on.nodes) }}, {# depends_on_nodes #}
                     '{{ test.package_name }}', {# package_name #}
                     '{{ test.original_file_path | replace('\\', '\\\\') }}', {# test_path #}
                     {{ tojson(test.tags) }}, {# tags #}
-                    parse_json('{{ tojson(test.test_metadata) }}') {# test_metadata #}
+                    parse_json('{{ tojson(test.test_metadata) }}'), {# test_metadata #}
+                    '{{ test_description }}' {# description #}
                 )
                 {%- if not loop.last %},{%- endif %}
             {%- endfor %}
