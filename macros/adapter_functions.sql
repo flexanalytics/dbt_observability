@@ -9,3 +9,10 @@
 {% macro sqlserver__stddev() -%}
     stdev
 {%- endmacro %}
+
+{% macro log_observability() -%}
+  {{ return(adapter.dispatch('log_observability','dbt_observability')()) }}
+{%- endmacro %}
+
+{% macro default__log_observability() -%}
+{%- endmacro %}
