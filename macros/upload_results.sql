@@ -24,6 +24,8 @@
 
     {% if execute and var('dbt_observability:tracking_enabled', true) and flags.WHICH in ['build','run','test'] %}
 
+        {{ dbt_observability.log_observability() }}
+
         {% do log("Uploading invocations", true) %}
         {% set invocations = dbt_observability.get_relation('invocations') %}
         {% set content_invocations = dbt_observability.upload_invocations() %}
