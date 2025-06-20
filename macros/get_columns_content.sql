@@ -1,9 +1,10 @@
 {% macro get_columns_content(graph, resource_type) %}
     {% set columns = [] %}
+    {% set packages = var('dbt_observability:projects', [project_name]) %}
 
     {% if resource_type == 'model' %}
-        {% for model in graph.nodes.values() %}
-            {% if model.resource_type == 'model' and model.columns %}
+        {% for model in graph.nodes.values() | selectattr("package_name", "in", packages) %}
+            {% if model.resource_type == 'model' and model.columns and model %}
                 {% for column in model.columns.values() %}
                     {% do columns.append({
                         'name': column.name,
