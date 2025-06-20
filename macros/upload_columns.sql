@@ -1,6 +1,5 @@
 {% macro upload_columns(columns, path=None, materialization=[]) -%}
-    {% set models = dbt_observability.get_models_list(graph, path, materialization) %}
-    {{ return(adapter.dispatch('get_columns_dml_sql', 'dbt_observability')(columns, models)) }}
+    {{ return(adapter.dispatch('get_columns_dml_sql', 'dbt_observability')(columns)) }}
 {%- endmacro %}
 
 {% macro get_observability_config_from_node(node) %}
@@ -55,13 +54,11 @@
 
 {% endmacro %}
 
-{% macro default__get_columns_dml_sql(columns, models) -%}
+{% macro default__get_columns_dml_sql(columns) -%}
+    {% set column_values %}
 
-    {% if models != [] %}
-        {% set model_values %}
-
-        {% set adapterArr = ['databricks','spark','snowflake'] %}
-        {% if target.type in adapterArr %}
+    {% set adapterArr = ['databricks','spark','snowflake'] %}
+    {% if target.type in adapterArr %}
 
         select
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(1) }},
@@ -84,153 +81,127 @@
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(18) }}
         from values
 
+    {% endif %}
+
+    {% set statsType = dbt_observability.get_observability_value('column_stats_type', model) %}
+
+    {% set statsCols = [] %}
+
+    {% if statsType is not none and statsType != 'NONE' %}
+
+        {% set statsPick = dbt_observability.get_observability_value('column_stats_pick', model) %}
+        {% set valsMax = dbt_observability.get_observability_value('column_values_max', model) %}
+        {% if valsMax is none %}
+            {% set valsMax = 10 %}
         {% endif %}
 
-        {% set new_list = [] %}
-        {% for model in models  %}
-            {% if model.columns %}
-            {% do new_list.append( model ) %}
+        {% for column in columns %}
+
+            {% set isMetric = dbt_observability.is_metric(column, model) %}
+
+            {% if statsType == 'METRIC' %}
+
+                {% if isMetric %}
+                {% do statsCols.append( column ) %}
+                {% endif %}
+
+            {% elif statsType == 'DOC' %}
+
+                {% set col = column.name.lower() %}
+                {% if col.name is defined or isMetric %}
+                    {% do statsCols.append( column ) %}
+                {% endif %}
+
+            {% elif statsType == 'PICK' %}
+
+                {% set picked = statsPick | select('equalto', column.name.lower()) | first %}
+                {% if picked is not none %}
+                    {% do statsCols.append( column ) %}
+                {% endif %}
+
             {% endif %}
+
         {% endfor %}
 
-        {% for model in new_list -%}
+        {% if(statsCols|length > 0) %}
 
-            {% set lowerCols = {} %}
-            {% for k, v in model.columns.items() %}
-                {% do lowerCols.update({k.lower(): v}) %}
-            {% endfor %}
-
-            {%- set relation = adapter.get_relation(database=model.database, schema=model.schema, identifier=model.name) -%}
-            {% set table_exists=relation is not none %}
-
-            {% if table_exists %}
-                {%- set columns = adapter.get_columns_in_relation(relation) -%}
-            {% endif %}
-
-            {% set statsType = dbt_observability.get_observability_value('column_stats_type', model) %}
-
-            {% set statsCols = [] %}
-
-            {% if target.schema == model.schema and statsType is not none and statsType != 'NONE' %}
-
-                {% set statsPick = dbt_observability.get_observability_value('column_stats_pick', model) %}
-                {% set valsMax = dbt_observability.get_observability_value('column_values_max', model) %}
-                {% if valsMax is none %}
-                    {% set valsMax = 10 %}
-                {% endif %}
-
-                {% for column in columns %}
-
-                    {% set isMetric = dbt_observability.is_metric(column, model) %}
-
-                    {% if statsType == 'METRIC' %}
-
-                        {% if isMetric %}
-                        {% do statsCols.append( column ) %}
-                        {% endif %}
-
-                    {% elif statsType == 'DOC' %}
-
-                        {% set col = lowerCols.get(column.name.lower()) %}
-                        {% if col.name is defined or isMetric %}
-                            {% do statsCols.append( column ) %}
-                        {% endif %}
-
-                    {% elif statsType == 'PICK' %}
-
-                        {% set picked = statsPick | select('equalto', column.name.lower()) | first %}
-                        {% if picked is not none %}
-                            {% do statsCols.append( column ) %}
-                        {% endif %}
-
-                    {% endif %}
-
-                {% endfor %}
-
-                {% if(statsCols|length > 0) %}
-
-                    {%- set col_query -%}
-                    select
-                        count(1) as "row_count"
-                        {% for column in statsCols %}
-                        , count(distinct {{ column.name }}) as "{{ column.name }}_distinct"
-                        , count(1) - count({{ column.name }}) as "{{ column.name }}_null"
-                        {% if column.is_number() %}
-                        , min({{ column.name }}) as "{{ column.name }}_min"
-                        , max({{ column.name }}) as "{{ column.name }}_max"
-                        , avg({{ column.name }}) as "{{ column.name }}_avg"
-                        , sum({{ column.name }}) as "{{ column.name }}_sum"
-                        , {{ dbt_observability.stddev() }}({{ column.name }}) as "{{ column.name }}_stdev"
-                        {% else %}
-                        , null as "{{ column.name }}_min"
-                        , null as "{{ column.name }}_max"
-                        , null as "{{ column.name }}_avg"
-                        , null as "{{ column.name }}_sum"
-                        , null as "{{ column.name }}_stdev"
-                        {% endif %}
-                        {% endfor %}
-                        {% for column in columns %}
-                        {% set isMetric = dbt_observability.is_metric(column, model) %}
-                        {% set col = lowerCols.get(column.name.lower()) %}
-                        {% if statsType!='METRIC' and column.is_string() and col.name is defined and not isMetric and target.type != 'redshift' %}
-                        , {{ dbt.listagg("distinct "~column.name, "', '", "order by "~column.name, valsMax) }} as "{{ column.name }}_values"
-                        {% else %}
-                        , null as "{{ column.name }}_values"
-                        {% endif %}
-                        {% endfor %}
-                    from {{relation}}
-                    {%- endset -%}
-                    {%- set results = run_query(col_query) -%}
-
+            {%- set col_query -%}
+            select
+                count(1) as "row_count"
+                {% for column in statsCols %}
+                , count(distinct {{ column.name }}) as "{{ column.name }}_distinct"
+                , count(1) - count({{ column.name }}) as "{{ column.name }}_null"
+                {% if column.is_number() %}
+                , min({{ column.name }}) as "{{ column.name }}_min"
+                , max({{ column.name }}) as "{{ column.name }}_max"
+                , avg({{ column.name }}) as "{{ column.name }}_avg"
+                , sum({{ column.name }}) as "{{ column.name }}_sum"
+                , {{ dbt_observability.stddev() }}({{ column.name }}) as "{{ column.name }}_stdev"
                 {% else %}
-
-                    {%- set results = none -%}
-
+                , null as "{{ column.name }}_min"
+                , null as "{{ column.name }}_max"
+                , null as "{{ column.name }}_avg"
+                , null as "{{ column.name }}_sum"
+                , null as "{{ column.name }}_stdev"
                 {% endif %}
-
-            {% else %}
-
-                {%- set results = none -%}
-
-            {% endif %}
-
-            {% for column in columns %}
-                {% set metric = graph.metrics.values() | selectattr('expression'|lower, 'equalto', column.name.lower()) | first %}
+                {% endfor %}
+                {% for column in columns %}
                 {% set isMetric = dbt_observability.is_metric(column, model) %}
-                {% set col = lowerCols.get(column.name.lower()) %}
-                (
-                    '{{ invocation_id }}' {# command_invocation_id #}
-                    , '{{ model.unique_id }}' {# node_id #}
-                    , '{{ column.name }}' {# column_name #}
-                    , '{{ column.data_type }}' {# data_type #}
-                    {% if target.type == 'bigquery' %}
-                    , {{ '[]' if col.tags is not defined else tojson(col.tags) }} {# tags #}
-                    , parse_json('{{ '{}' if col.meta is not defined else tojson(col.meta) }}') {# meta #}
-                    {% else %}
-                    , '{{ null if col.tags is not defined else tojson(col.tags) }}' {# tags #}
-                    , '{{ null if col.meta is not defined else tojson(col.meta) }}' {# meta #}
-                    {% endif %}
-                    , '{{ null if col.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(col.description)}}' {# description #}
-                    , '{{ "Y" if col.name is defined or isMetric else "N" }}' {# is_documented #}
-                    {% set statsCol = statsCols | selectattr('name', 'equalto', column.name) | first  %}
-                    , {{ (results and results.columns['row_count'].values()[0]) or 'null' }} {# row_count #}
-                    , {{ (results and results.columns[column.name ~ '_distinct'] and results.columns[column.name ~ '_distinct'].values()[0]) or 'null' }} {# row_distinct #}
-                    , {{ (results and results.columns[column.name ~ '_null'] and results.columns[column.name ~ '_null'].values()[0]) or 'null' }} {# row_null #}
-                    , {{ (results and results.columns[column.name ~ '_min'] and results.columns[column.name ~ '_min'].values()[0]) or 'null' }} {# row_min #}
-                    , {{ (results and results.columns[column.name ~ '_max'] and results.columns[column.name ~ '_max'].values()[0]) or 'null' }} {# row_max #}
-                    , {{ (results and results.columns[column.name ~ '_avg'] and results.columns[column.name ~ '_avg'].values()[0]) or 'null' }} {# row_avg #}
-                    , {{ (results and results.columns[column.name ~ '_sum'] and results.columns[column.name ~ '_sum'].values()[0]) or 'null' }} {# row_sum #}
-                    , {{ (results and results.columns[column.name ~ '_stdev'] and results.columns[column.name ~ '_stdev'].values()[0]) or 'null' }} {# row_stdev #}
-                    , '{{ "Y" if isMetric else "N" }}' {# is_metric #}
-                    , '{{ (results and results.columns[column.name ~ '_values'] and results.columns[column.name ~ '_values'].values()[0]) or null }}' {# column_values #}
-                )
-                {%- if not loop.last %},{%- endif %}
-            {% endfor %}
-            {%- if not loop.last %},{%- endif %}
-        {%- endfor %}
-        {% endset %}
-        {{ model_values }}
+                {% set col = column.name.lower() %}
+                {% if statsType!='METRIC' and column.is_string() and col.name is defined and not isMetric and target.type != 'redshift' %}
+                , {{ dbt.listagg("distinct "~column.name, "', '", "order by "~column.name, valsMax) }} as "{{ column.name }}_values"
+                {% else %}
+                , null as "{{ column.name }}_values"
+                {% endif %}
+                {% endfor %}
+            from {{relation}}
+            {%- endset -%}
+            {%- set results = run_query(col_query) -%}
+
+        {% else %}
+
+            {%- set results = none -%}
+
+        {% endif %}
+
     {% else %}
-        {{ return("") }}
+
+        {%- set results = none -%}
+
     {% endif %}
+
+    {% for column in columns %}
+        {% set metric = graph.metrics.values() | selectattr('expression'|lower, 'equalto', column.name.lower()) | first %}
+        {% set isMetric = dbt_observability.is_metric(column, model) %}
+        {% set col = column.name.lower() %}
+        (
+            '{{ invocation_id }}' {# command_invocation_id #}
+            , '{{ model.unique_id }}' {# node_id #}
+            , '{{ column.name }}' {# column_name #}
+            , '{{ column.data_type }}' {# data_type #}
+            {% if target.type == 'bigquery' %}
+            , {{ '[]' if col.tags is not defined else tojson(col.tags) }} {# tags #}
+            , parse_json('{{ '{}' if col.meta is not defined else tojson(col.meta) }}') {# meta #}
+            {% else %}
+            , '{{ null if col.tags is not defined else tojson(col.tags) }}' {# tags #}
+            , '{{ null if col.meta is not defined else tojson(col.meta) }}' {# meta #}
+            {% endif %}
+            , '{{ null if col.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(col.description)}}' {# description #}
+            , '{{ "Y" if col.name is defined or isMetric else "N" }}' {# is_documented #}
+            {% set statsCol = statsCols | selectattr('name', 'equalto', column.name) | first  %}
+            , {{ (results and results.columns['row_count'].values()[0]) or 'null' }} {# row_count #}
+            , {{ (results and results.columns[column.name ~ '_distinct'] and results.columns[column.name ~ '_distinct'].values()[0]) or 'null' }} {# row_distinct #}
+            , {{ (results and results.columns[column.name ~ '_null'] and results.columns[column.name ~ '_null'].values()[0]) or 'null' }} {# row_null #}
+            , {{ (results and results.columns[column.name ~ '_min'] and results.columns[column.name ~ '_min'].values()[0]) or 'null' }} {# row_min #}
+            , {{ (results and results.columns[column.name ~ '_max'] and results.columns[column.name ~ '_max'].values()[0]) or 'null' }} {# row_max #}
+            , {{ (results and results.columns[column.name ~ '_avg'] and results.columns[column.name ~ '_avg'].values()[0]) or 'null' }} {# row_avg #}
+            , {{ (results and results.columns[column.name ~ '_sum'] and results.columns[column.name ~ '_sum'].values()[0]) or 'null' }} {# row_sum #}
+            , {{ (results and results.columns[column.name ~ '_stdev'] and results.columns[column.name ~ '_stdev'].values()[0]) or 'null' }} {# row_stdev #}
+            , '{{ "Y" if isMetric else "N" }}' {# is_metric #}
+            , '{{ (results and results.columns[column.name ~ '_values'] and results.columns[column.name ~ '_values'].values()[0]) or null }}' {# column_values #}
+        )
+        {%- if not loop.last %},{%- endif %}
+    {% endfor %}
+    {% endset %}
+    {{ column_values }}
 {% endmacro -%}
