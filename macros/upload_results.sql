@@ -64,27 +64,27 @@
         }}
 
         {% do log("Uploading model columns", true) %}
-        {% set models = dbt_observability.get_relation('columns') %}
+        {% set column_table = dbt_observability.get_relation('columns') %}
         {% set columns = dbt_observability.get_columns_content(graph, 'model') %}
         {% for i in range(0, columns | length, upload_limit) %}
             {% set content_columns = dbt_observability.upload_columns(columns[i: i + upload_limit], path, materialization) %}
             {{ dbt_observability.insert_into_metadata_table(
-                database_name=models.database,
-                schema_name=models.schema,
-                table_name=models.identifier,
+                database_name=column_table.database,
+                schema_name=column_table.schema,
+                table_name=column_table.identifier,
                 content=content_columns
             ) }}
         {% endfor %}
 
         {% do log("Uploading source columns", true) %}
-        {% set models = dbt_observability.get_relation('columns') %}
+        {% set source_column_table = dbt_observability.get_relation('columns') %}
         {% set columns = dbt_observability.get_columns_content(graph, 'source') %}
         {% for i in range(0, columns | length, upload_limit) %}
             {% set content_sources = dbt_observability.upload_source_schema(graph, columns[i: i + upload_limit]) %}
             {{ dbt_observability.insert_into_metadata_table(
-                database_name=models.database,
-                schema_name=models.schema,
-                table_name=models.identifier,
+                database_name=source_column_table.database,
+                schema_name=source_column_table.schema,
+                table_name=source_column_table.identifier,
                 content=content_sources
             ) }}
         {% endfor %}
