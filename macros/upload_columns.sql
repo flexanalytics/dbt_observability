@@ -83,19 +83,16 @@
 
     {% endif %}
 
-    {% set statsType = dbt_observability.get_observability_value('column_stats_type', model) %}
-
     {% set statsCols = [] %}
 
-    {% if statsType is not none and statsType != 'NONE' %}
-
-        {% set statsPick = dbt_observability.get_observability_value('column_stats_pick', model) %}
-        {% set valsMax = dbt_observability.get_observability_value('column_values_max', model) %}
-        {% if valsMax is none %}
-            {% set valsMax = 10 %}
-        {% endif %}
-
         {% for column in columns %}
+            {% set model = column.model %}
+            {% set statsType = dbt_observability.get_observability_value('column_stats_type', model) %}
+            {% set statsPick = dbt_observability.get_observability_value('column_stats_pick', model) %}
+            {% set valsMax = dbt_observability.get_observability_value('column_values_max', model) %}
+            {% if valsMax is none %}
+                {% set valsMax = 10 %}
+            {% endif %}
 
             {% set isMetric = dbt_observability.is_metric(column, model) %}
 
@@ -162,11 +159,6 @@
 
         {% endif %}
 
-    {% else %}
-
-        {%- set results = none -%}
-
-    {% endif %}
 
     {% for column in columns %}
         {% set metric = graph.metrics.values() | selectattr('expression'|lower, 'equalto', column.name.lower()) | first %}
