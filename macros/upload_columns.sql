@@ -107,8 +107,7 @@
 
             {% elif statsType == 'DOC' %}
 
-                {% set col = column.name.lower() %}
-                {% if col.name is defined or isMetric %}
+                {% if column.name is defined or isMetric %}
                     {% do statsCols.append( column ) %}
                 {% endif %}
 
@@ -147,8 +146,7 @@
                 {% endfor %}
                 {% for column in columns %}
                 {% set isMetric = dbt_observability.is_metric(column, model) %}
-                {% set col = column.name.lower() %}
-                {% if statsType!='METRIC' and column.is_string() and col.name is defined and not isMetric and target.type != 'redshift' %}
+                {% if statsType!='METRIC' and column.is_string() and column.name is defined and not isMetric and target.type != 'redshift' %}
                 , {{ dbt.listagg("distinct "~column.name, "', '", "order by "~column.name, valsMax) }} as "{{ column.name }}_values"
                 {% else %}
                 , null as "{{ column.name }}_values"
@@ -173,21 +171,22 @@
     {% for column in columns %}
         {% set metric = graph.metrics.values() | selectattr('expression'|lower, 'equalto', column.name.lower()) | first %}
         {% set isMetric = dbt_observability.is_metric(column, model) %}
-        {% set col = column.name.lower() %}
         (
             '{{ invocation_id }}' {# command_invocation_id #}
-            , '{{ model.unique_id }}' {# node_id #}
+            , '{{ column.model.unique_id }}' {# node_id #}
             , '{{ column.name }}' {# column_name #}
             , '{{ column.data_type }}' {# data_type #}
+            {% set column_meta = adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(column.meta)) %}
             {% if target.type == 'bigquery' %}
-            , {{ '[]' if col.tags is not defined else tojson(col.tags) }} {# tags #}
-            , parse_json('{{ '{}' if col.meta is not defined else tojson(col.meta) }}') {# meta #}
+            , {{ '[]' if column.tags is not defined else tojson(column.tags) }} {# tags #}
+            , parse_json('{{ '{}' if column.meta is not defined else column_meta }}') {# meta #}
             {% else %}
-            , '{{ null if col.tags is not defined else tojson(col.tags) }}' {# tags #}
-            , '{{ null if col.meta is not defined else tojson(col.meta) }}' {# meta #}
+            , '{{ null if column.tags is not defined else tojson(column.tags) }}' {# tags #}
+            , '{{ null if column.meta is not defined else column_meta }}' {# meta #}
             {% endif %}
-            , '{{ null if col.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(col.description)}}' {# description #}
-            , '{{ "Y" if col.name is defined or isMetric else "N" }}' {# is_documented #}
+            {% set column_description = adapter.dispatch('escape_singlequote', 'dbt_observability')(column.description) %}
+            , '{{ null if column.description is not defined else column_description }}' {# description #}
+            , '{{ "Y" if column.name is defined or isMetric else "N" }}' {# is_documented #}
             {% set statsCol = statsCols | selectattr('name', 'equalto', column.name) | first  %}
             , {{ (results and results.columns['row_count'].values()[0]) or 'null' }} {# row_count #}
             , {{ (results and results.columns[column.name ~ '_distinct'] and results.columns[column.name ~ '_distinct'].values()[0]) or 'null' }} {# row_distinct #}
