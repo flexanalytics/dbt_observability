@@ -50,7 +50,8 @@
                     {%- endset -%}
                 {% endif %}
                 {%- set results = run_query(rowcount_query) -%}
-                {%- set model_rowcount = results.columns[0].values()[0] -%}
+                {%- set raw_value = results.columns[0].values() | first -%}
+                {%- set model_rowcount = 0 if raw_value is none else raw_value -%}
             {% else %}
                 {%- set model_rowcount = 0 -%}
             {% endif %}
@@ -70,7 +71,7 @@
                 '{{ tojson(model.tags) }}', {# tags #}
                 '{{ tojson(model.config.meta) }}', {# meta #}
                 '{{ null if model.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(model.description) }}', {# description #}
-                {{ 0 if model_rowcount is not defined else model_rowcount }} {# total rowcount #}
+                {{ model_rowcount }}
             )
             {%- if not loop.last %},{%- endif %}
         {%- endfor %}
@@ -93,7 +94,8 @@
                     select count(*) as model_rowcount from {{ model.schema }}.{{ model.name }}
                     {%- endset -%}
                     {%- set results = run_query(rowcount_query) -%}
-                    {%- set model_rowcount = results.columns[0].values()[0] -%}
+                    {%- set raw_value = results.columns[0].values() | first -%}
+                    {%- set model_rowcount = 0 if raw_value is none else raw_value -%}
                 {% else %}
                     {%- set model_rowcount = 0 -%}
                 {% endif %}
@@ -113,7 +115,7 @@
                     {{ tojson(model.tags) }}, {# tags #}
                     parse_json('{{ tojson(model.config.meta) }}'), {# meta #}
                     '{{ null if model.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(model.description) }}', {# description #}
-                    {{ 0 if model_rowcount is not defined else model_rowcount }} {# total rowcount #}
+                    {{ model_rowcount }} {# total rowcount #}
                 )
                 {%- if not loop.last %},{%- endif %}
             {%- endfor %}
