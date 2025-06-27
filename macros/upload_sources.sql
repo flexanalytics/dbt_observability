@@ -53,7 +53,8 @@
                     {%- endset -%}
                 {% endif %}
                 {%- set results = run_query(rowcount_query) -%}
-                {%- set source_rowcount = results.columns[0].values()[0] -%}
+                {%- set raw_value = results.columns[0].values() | first -%}
+                {%- set source_rowcount = 0 if raw_value is none else raw_value -%}
 
             {% else %}
 
@@ -101,7 +102,8 @@
                     and lower(table_schema) = lower('{{ source.schema }}')
                 {%- endset -%}
             {%- set results = run_query(rowcount_query) -%}
-            {%- set source_rowcount = results.columns[0].values()[0] -%}
+            {%- set raw_value = results.columns[0].values() | first -%}
+            {%- set source_rowcount = 0 if raw_value is none else raw_value -%}
             {% else %}
                 {%- set source_rowcount = 0 -%}
             {% endif %}
@@ -117,7 +119,7 @@
                     '{{ source.identifier }}', {# identifier #}
                     '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(source.loaded_at_field) }}', {# loaded_at_field #}
                     parse_json('{{ tojson(source.freshness) }}'), {# freshness #}
-                    {{ 0 if source_rowcount is not defined else source_rowcount }} {# source_rowcount #}
+                    {{ source_rowcount }} {# source_rowcount #}
                 )
                 {%- if not loop.last %},{%- endif %}
             {%- endfor %}
