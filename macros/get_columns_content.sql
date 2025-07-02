@@ -62,6 +62,7 @@
         )
                 {%- if not loop.last %} union all {% endif %}
             {% endfor %}
+            {%- if not loop.last %} union all {% endif %}
         {% endfor %}
     {%- endset %}
 
