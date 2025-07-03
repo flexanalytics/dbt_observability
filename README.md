@@ -32,7 +32,7 @@ packages:
 2. Run `dbt deps` to install the package
 
 3. Add an on-run-end hook to your `dbt_project.yml`: `on-run-end: "{{ dbt_observability.upload_results(results) }}"`
-(We recommend using the `"dbt_observability:environments": ["prod"]` variable in your project to control which environments this package runs in [currently defaults to `["prod"]`])
+(We recommend using the `"dbt_observability:environments": ["prod"]` variable in your project to control which environments this package runs in [currently defaults to `["prod"]`]). If your project will be imported as a package to another project that also runs observability, you should add the project name to the on-run-end hook, like so: `on-run-end: "{{ dbt_observability.upload_results(results, 'your_project_name') }}"` to avoid observability running multiple times in the same dbt invocation.
 > [!NOTE]
 > dbt Cloud defaults all targets to `default`, if you want observability to run on a dbt cloud job you will need to ensure the corresponding target is updated. [More information can be found here](https://docs.getdbt.com/docs/build/custom-target-names).
 >
