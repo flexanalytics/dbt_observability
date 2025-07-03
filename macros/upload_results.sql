@@ -15,7 +15,8 @@
 {% endmacro %}
 
 
-{% macro upload_results(results) -%}
+{% macro upload_results(results, project=project_name) -%}
+  {% if project == project_name %}
     {% set upload_limit = 300 if target.type == 'bigquery' else 1000 %}
     {% set path = var('dbt_observability:path', None) %}
     {% set materialization = var('dbt_observability:materialization', ['table','incremental']) %}
@@ -157,4 +158,5 @@
 
     {% endif %}
     {% endif %}
+  {% endif %}
 {%- endmacro %}
