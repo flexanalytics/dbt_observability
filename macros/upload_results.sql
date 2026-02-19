@@ -21,7 +21,17 @@
     {% set path = var('dbt_observability:path', None) %}
     {% set materialization = var('dbt_observability:materialization', ['table','incremental']) %}
     {% set target_names = var('dbt_observability:environments', ["prod"]) %}
-    {% if target.name in target_names %}
+    {% set run_in_all_environments = var('dbt_observability:run_in_all_environments', false) %}
+    {% set ns = namespace(excluded=[]) %}
+    {% for name in target_names %}
+        {% if name.startswith('-') %}
+            {% set ns.excluded = ns.excluded + [name[1:]] %}
+        {% endif %}
+    {% endfor %}
+    {% set excluded_environments = ns.excluded %}
+    {% set has_all_environments = 'all_environments' in target_names or (target_names | length > 0 and excluded_environments | length == target_names | length) %}
+    {% set should_run = run_in_all_environments or (has_all_environments and target.name not in excluded_environments) or target.name in target_names %}
+    {% if should_run %}
 
     {% if execute and var('dbt_observability:tracking_enabled', true) and flags.WHICH in ['build','run','test'] %}
 

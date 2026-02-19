@@ -54,7 +54,8 @@ The following configuration can be used to specify where the raw (sources) data 
 vars:
 ...
   "dbt_observability:tracking_enabled": true # optional, create observability base tables - default is true
-  "dbt_observability:environments": ["prod"] # optional, default is ["prod"]
+  "dbt_observability:environments": ["prod"] # optional, default is ["prod"] - see Environment Configuration below
+  "dbt_observability:run_in_all_environments": false # optional, run in all environments - default is false
   "dbt_observability:projects": ["main_project", "installed_package"] # optional, which projects should observability monitor. default is the current project only
   "dbt_observability:path": "models/marts/" # optional, which paths should observability monitor. must be in the form of "dbt_observability:path": "path/subpath/" - default is `None`, will run on all paths in the project
   "dbt_observability:materialization": ["table","incremental"] # optional, which model materialization should observability run on. must be array of "table", "view", "incremental", "ephemeral" - default is ["table","incremental"]
@@ -78,6 +79,31 @@ models:
 Note that model materializations and `on_schema_change` configs are defined in this package's `dbt_project.yml`, so do not set them globally in your `dbt_project.yml` ([see docs on configuring packages](https://docs.getdbt.com/docs/building-a-dbt-project/package-management#configuring-packages)):
 
 > Configurations made in your dbt_project.yml file will override any configurations in a package (either in the dbt_project.yml file of the package, or in config blocks).
+
+### Environment Configuration
+
+The `dbt_observability:environments` variable controls which dbt target environments observability runs in. Several configuration patterns are supported:
+
+```yml
+vars:
+  # Run only in specific environments (default behavior)
+  "dbt_observability:environments": ["prod"]
+  "dbt_observability:environments": ["prod", "staging"]
+
+  # Run in all environments
+  "dbt_observability:environments": ["all_environments"]
+
+  # Run in all environments except specific ones
+  "dbt_observability:environments": ["all_environments", "-dev"]
+  "dbt_observability:environments": ["all_environments", "-dev", "-local"]
+
+  # Exclusions-only shorthand (equivalent to all_environments with exclusions)
+  "dbt_observability:environments": ["-dev"]  # same as ["all_environments", "-dev"]
+  "dbt_observability:environments": ["-dev", "-local"]  # same as ["all_environments", "-dev", "-local"]
+
+  # Alternative: dedicated boolean for all environments
+  "dbt_observability:run_in_all_environments": true
+```
 
 ### Environment Variables
 
