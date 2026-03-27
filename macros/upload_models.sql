@@ -9,11 +9,12 @@
 
     {% if models != [] %}
         {% set rowcount_paths = var('dbt_observability:model_rowcount_paths', []) %}
+        {% set track_rowcounts = var('dbt_observability:track_model_rowcounts', true) %}
 
         {# For Snowflake: single pre-loop to collect relation info and run one batch rowcount query #}
         {% set relation_cache = {} %}
         {% set rowcount_map = {} %}
-        {% if target.type == 'snowflake' %}
+        {% if track_rowcounts and target.type == 'snowflake' %}
             {% set eligible_names = [] %}
             {% set eligible_schemas = [] %}
             {% for model in models %}
@@ -80,7 +81,7 @@
                 {%- set table_exists = model_relation is not none -%}
             {% endif %}
 
-            {% if table_exists and model.config.materialized in ["table","incremental"] %}
+            {% if track_rowcounts and table_exists and model.config.materialized in ["table","incremental"] %}
                 {% if target.type == 'snowflake' %}
                     {%- set rc_key = (model.schema | lower) ~ '.' ~ (model.name | lower) -%}
                     {%- set model_rowcount = rowcount_map.get(rc_key, 0) -%}
@@ -138,11 +139,12 @@
     {% if models != [] %}
         {% set model_values %}
             {% set rowcount_paths = var('dbt_observability:model_rowcount_paths', []) %}
+            {% set track_rowcounts = var('dbt_observability:track_model_rowcounts', true) %}
             {% for model in models -%}
             {%- set model_relation = adapter.get_relation(database=model.database, schema=model.schema, identifier=model.name) -%}
             {% set table_exists=model_relation is not none %}
 
-            {% if table_exists and model.config.materialized in ["table","incremental"] %}
+            {% if track_rowcounts and table_exists and model.config.materialized in ["table","incremental"] %}
                 {% set orig_path = model.original_file_path | replace('\\', '/') %}
                 {% set ns = namespace(should_count=not rowcount_paths) %}
                 {% for rpath in rowcount_paths %}
