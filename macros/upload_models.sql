@@ -33,27 +33,39 @@
 
         {% endif %}
 
+        {% set rowcount_paths = var('dbt_observability:model_rowcount_paths', []) %}
         {% for model in models -%}
             {%- set model_relation = adapter.get_relation(database=model.database, schema=model.schema, identifier=model.name) -%}
             {% set table_exists=model_relation is not none %}
 
             {% if table_exists and model.config.materialized in ["table","incremental"] %}
-                {% if target.type == 'snowflake' %}
-                    {%- set rowcount_query %}
-                    select row_count as model_rowcount
-                    from information_schema.tables
-                    where lower(table_name) = lower('{{ model.name }}')
-                        and lower(table_schema) = lower('{{ model.schema }}')
-                    {%- endset -%}
+                {% set orig_path = model.original_file_path | replace('\\', '/') %}
+                {% set ns = namespace(should_count=not rowcount_paths) %}
+                {% for rpath in rowcount_paths %}
+                    {% if orig_path.startswith(rpath) %}
+                        {% set ns.should_count = true %}
+                    {% endif %}
+                {% endfor %}
+                {% if ns.should_count %}
+                    {% if target.type == 'snowflake' %}
+                        {%- set rowcount_query %}
+                        select row_count as model_rowcount
+                        from information_schema.tables
+                        where lower(table_name) = lower('{{ model.name }}')
+                            and lower(table_schema) = lower('{{ model.schema }}')
+                        {%- endset -%}
+                    {% else %}
+                        {%- set rowcount_query %}
+                        select count(*) as model_rowcount
+                        from {{ model.schema }}.{{ model.name }}
+                        {%- endset -%}
+                    {% endif %}
+                    {%- set results = run_query(rowcount_query) -%}
+                    {%- set raw_value = results.columns[0].values() | first -%}
+                    {%- set model_rowcount = 0 if raw_value is none else raw_value -%}
                 {% else %}
-                    {%- set rowcount_query %}
-                    select count(*) as model_rowcount
-                    from {{ model.schema }}.{{ model.name }}
-                    {%- endset -%}
+                    {%- set model_rowcount = 0 -%}
                 {% endif %}
-                {%- set results = run_query(rowcount_query) -%}
-                {%- set raw_value = results.columns[0].values() | first -%}
-                {%- set model_rowcount = 0 if raw_value is none else raw_value -%}
             {% else %}
                 {%- set model_rowcount = 0 -%}
             {% endif %}
@@ -87,17 +99,29 @@
 {% macro bigquery__get_models_dml_sql(models) -%}
     {% if models != [] %}
         {% set model_values %}
+            {% set rowcount_paths = var('dbt_observability:model_rowcount_paths', []) %}
             {% for model in models -%}
             {%- set model_relation = adapter.get_relation(database=model.database, schema=model.schema, identifier=model.name) -%}
             {% set table_exists=model_relation is not none %}
 
             {% if table_exists and model.config.materialized in ["table","incremental"] %}
+                {% set orig_path = model.original_file_path | replace('\\', '/') %}
+                {% set ns = namespace(should_count=not rowcount_paths) %}
+                {% for rpath in rowcount_paths %}
+                    {% if orig_path.startswith(rpath) %}
+                        {% set ns.should_count = true %}
+                    {% endif %}
+                {% endfor %}
+                {% if ns.should_count %}
                     {%- set rowcount_query %}
                     select count(*) as model_rowcount from {{ model.schema }}.{{ model.name }}
                     {%- endset -%}
                     {%- set results = run_query(rowcount_query) -%}
                     {%- set raw_value = results.columns[0].values() | first -%}
                     {%- set model_rowcount = 0 if raw_value is none else raw_value -%}
+                {% else %}
+                    {%- set model_rowcount = 0 -%}
+                {% endif %}
                 {% else %}
                     {%- set model_rowcount = 0 -%}
                 {% endif %}
