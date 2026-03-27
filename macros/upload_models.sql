@@ -8,6 +8,45 @@
 {% macro default__get_models_dml_sql(models) -%}
 
     {% if models != [] %}
+        {% set rowcount_paths = var('dbt_observability:model_rowcount_paths', []) %}
+
+        {# For Snowflake: single pre-loop to collect relation info and run one batch rowcount query #}
+        {% set relation_cache = {} %}
+        {% set rowcount_map = {} %}
+        {% if target.type == 'snowflake' %}
+            {% set eligible_names = [] %}
+            {% set eligible_schemas = [] %}
+            {% for model in models %}
+                {% set model_relation = adapter.get_relation(database=model.database, schema=model.schema, identifier=model.name) %}
+                {% do relation_cache.update({model.unique_id: model_relation is not none}) %}
+                {% if model_relation is not none and model.config.materialized in ["table","incremental"] %}
+                    {% set orig_path = model.original_file_path | replace('\\', '/') %}
+                    {% set ns = namespace(should_count=not rowcount_paths) %}
+                    {% for rpath in rowcount_paths %}
+                        {% if orig_path.startswith(rpath) %}
+                            {% set ns.should_count = true %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if ns.should_count %}
+                        {% do eligible_names.append(model.name | lower) %}
+                        {% do eligible_schemas.append(model.schema | lower) %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            {% if eligible_names %}
+                {%- set batch_rowcount_query %}
+                select lower(table_name) as tname, lower(table_schema) as tschema, row_count as model_rowcount
+                from information_schema.tables
+                where lower(table_name) in ('{{ eligible_names | unique | join("', '") }}')
+                    and lower(table_schema) in ('{{ eligible_schemas | unique | join("', '") }}')
+                {%- endset %}
+                {% set batch_results = run_query(batch_rowcount_query) %}
+                {% for row in batch_results.rows %}
+                    {% do rowcount_map.update({row[1] ~ '.' ~ row[0]: row[2]}) %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
         {% set model_values %}
 
         {% set adapterArr = ['databricks','spark','snowflake'] %}
@@ -33,38 +72,37 @@
 
         {% endif %}
 
-        {% set rowcount_paths = var('dbt_observability:model_rowcount_paths', []) %}
         {% for model in models -%}
-            {%- set model_relation = adapter.get_relation(database=model.database, schema=model.schema, identifier=model.name) -%}
-            {% set table_exists=model_relation is not none %}
+            {% if target.type == 'snowflake' %}
+                {%- set table_exists = relation_cache.get(model.unique_id, false) -%}
+            {% else %}
+                {%- set model_relation = adapter.get_relation(database=model.database, schema=model.schema, identifier=model.name) -%}
+                {%- set table_exists = model_relation is not none -%}
+            {% endif %}
 
             {% if table_exists and model.config.materialized in ["table","incremental"] %}
-                {% set orig_path = model.original_file_path | replace('\\', '/') %}
-                {% set ns = namespace(should_count=not rowcount_paths) %}
-                {% for rpath in rowcount_paths %}
-                    {% if orig_path.startswith(rpath) %}
-                        {% set ns.should_count = true %}
-                    {% endif %}
-                {% endfor %}
-                {% if ns.should_count %}
-                    {% if target.type == 'snowflake' %}
-                        {%- set rowcount_query %}
-                        select row_count as model_rowcount
-                        from information_schema.tables
-                        where lower(table_name) = lower('{{ model.name }}')
-                            and lower(table_schema) = lower('{{ model.schema }}')
-                        {%- endset -%}
-                    {% else %}
+                {% if target.type == 'snowflake' %}
+                    {%- set rc_key = (model.schema | lower) ~ '.' ~ (model.name | lower) -%}
+                    {%- set model_rowcount = rowcount_map.get(rc_key, 0) -%}
+                {% else %}
+                    {% set orig_path = model.original_file_path | replace('\\', '/') %}
+                    {% set ns = namespace(should_count=not rowcount_paths) %}
+                    {% for rpath in rowcount_paths %}
+                        {% if orig_path.startswith(rpath) %}
+                            {% set ns.should_count = true %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if ns.should_count %}
                         {%- set rowcount_query %}
                         select count(*) as model_rowcount
                         from {{ model.schema }}.{{ model.name }}
                         {%- endset -%}
+                        {%- set results = run_query(rowcount_query) -%}
+                        {%- set raw_value = results.columns[0].values() | first -%}
+                        {%- set model_rowcount = 0 if raw_value is none else raw_value -%}
+                    {% else %}
+                        {%- set model_rowcount = 0 -%}
                     {% endif %}
-                    {%- set results = run_query(rowcount_query) -%}
-                    {%- set raw_value = results.columns[0].values() | first -%}
-                    {%- set model_rowcount = 0 if raw_value is none else raw_value -%}
-                {% else %}
-                    {%- set model_rowcount = 0 -%}
                 {% endif %}
             {% else %}
                 {%- set model_rowcount = 0 -%}
