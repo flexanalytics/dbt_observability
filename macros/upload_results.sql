@@ -17,7 +17,7 @@
 
 {% macro upload_results(results, project=project_name) -%}
   {% if project == project_name %}
-    {% set upload_limit = 300 if target.type == 'bigquery' else 1000 %}
+    {% set upload_limit = var('dbt_observability:upload_limit', 300 if target.type == 'bigquery' else 1000) %}
     {% set path = var('dbt_observability:path', None) %}
     {% set materialization = var('dbt_observability:materialization', ['table','incremental']) %}
     {% set target_names = var('dbt_observability:environments', ["prod"]) %}
@@ -64,15 +64,17 @@
         {% endif %}
 
         {% do log("Uploading models", true) %}
-        {% set models = dbt_observability.get_relation('models') %}
-        {% set content_models = dbt_observability.upload_models(graph, path, materialization) %}
-        {{ dbt_observability.insert_into_metadata_table(
-            database_name=models.database,
-            schema_name=models.schema,
-            table_name=models.identifier,
-            content=content_models
-            )
-        }}
+        {% set model_table = dbt_observability.get_relation('models') %}
+        {% set models_list = dbt_observability.get_models_list(graph, path, materialization) %}
+        {% for i in range(0, models_list | length, upload_limit) %}
+            {% set content_models = dbt_observability.upload_models(graph, path, materialization, models=models_list[i: i + upload_limit]) %}
+            {{ dbt_observability.insert_into_metadata_table(
+                database_name=model_table.database,
+                schema_name=model_table.schema,
+                table_name=model_table.identifier,
+                content=content_models
+            ) }}
+        {% endfor %}
 
         {% do log("Uploading model columns", true) %}
         {% set column_table = dbt_observability.get_relation('columns') %}

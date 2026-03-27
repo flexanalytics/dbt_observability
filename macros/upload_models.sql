@@ -1,5 +1,7 @@
-{% macro upload_models(graph, path=None, materialization=[]) -%}
-    {% set models = dbt_observability.get_models_list(graph, path, materialization) %}
+{% macro upload_models(graph, path=None, materialization=[], models=None) -%}
+    {% if models is none %}
+        {% set models = dbt_observability.get_models_list(graph, path, materialization) %}
+    {% endif %}
     {{ return(adapter.dispatch('get_models_dml_sql', 'dbt_observability')(models)) }}
 {%- endmacro %}
 
@@ -69,7 +71,7 @@
                 '{{ model.checksum.checksum }}', {# checksum #}
                 '{{ model.config.materialized }}', {# materialization #}
                 '{{ tojson(model.tags) }}', {# tags #}
-                '{{ tojson(model.config.meta) }}', {# meta #}
+                '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(model.config.meta)) }}', {# meta #}
                 '{{ null if model.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(model.description) }}', {# description #}
                 {{ model_rowcount }}
             )
@@ -113,7 +115,7 @@
                     '{{ model.checksum.checksum }}', {# checksum #}
                     '{{ model.config.materialized }}', {# materialization #}
                     {{ tojson(model.tags) }}, {# tags #}
-                    parse_json('{{ tojson(model.config.meta) }}'), {# meta #}
+                    parse_json('{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(model.config.meta)) }}'), {# meta #}
                     '{{ null if model.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(model.description) }}', {# description #}
                     {{ model_rowcount }} {# total rowcount #}
                 )
