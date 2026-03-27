@@ -60,6 +60,9 @@ vars:
   "dbt_observability:path": "models/marts/" # optional, which paths should observability monitor. must be in the form of "dbt_observability:path": "path/subpath/" - default is `None`, will run on all paths in the project
   "dbt_observability:materialization": ["table","incremental"] # optional, which model materialization should observability run on. must be array of "table", "view", "incremental", "ephemeral" - default is ["table","incremental"]
   "dbt_observability:track_source_rowcounts": false # optional, track source rowcounts - default is false [depending on your dbms, this can be slow and resource intensive as it may require a full table scan if the dbms does not store rowcounts in information_schema.tables]
+  "dbt_observability:track_model_rowcounts": false # optional, track model rowcounts - default is true
+  "dbt_observability:model_rowcount_paths": ["models/marts","models/reports"] # optional, only track rowcounts for models in paths
+  "dbt_observability:upload_limit": 300  # max number of rows to upload to observability on-run-end
   "dbt_observability:rowcount_diff_threshold_pct": .05 # optional, set threshold for no_anomaly test (see below)
 ...
 
