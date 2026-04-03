@@ -124,7 +124,7 @@
                 '{{ tojson(model.tags) }}', {# tags #}
                 '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(model.config.meta)) }}', {# meta #}
                 '{{ null if model.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(model.description) }}', {# description #}
-                {{ model_rowcount }}
+                {{ 0 if model_rowcount is none else model_rowcount }}
             )
             {%- if not loop.last %},{%- endif %}
         {%- endfor %}
@@ -181,7 +181,7 @@
                     {{ tojson(model.tags) }}, {# tags #}
                     parse_json('{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(model.config.meta)) }}'), {# meta #}
                     '{{ null if model.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(model.description) }}', {# description #}
-                    {{ model_rowcount }} {# total rowcount #}
+                    {{ 0 if model_rowcount is none else model_rowcount }} {# total rowcount #}
                 )
                 {%- if not loop.last %},{%- endif %}
             {%- endfor %}
