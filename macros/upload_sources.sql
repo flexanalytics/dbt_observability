@@ -105,7 +105,7 @@
                 '{{ source.identifier }}', {# identifier #}
                 '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(source.loaded_at_field) }}', {# loaded_at_field #}
                 '{{ tojson(adapter.dispatch('escape_singlequote', 'dbt_observability')(source.freshness)) }}', {# freshness #}
-                {{ source_rowcount }} {# source_rowcount #}
+                {{ 0 if source_rowcount is none else source_rowcount }} {# source_rowcount #}
 
             )
             {%- if not loop.last %},{%- endif %}
@@ -146,7 +146,7 @@
                     '{{ source.identifier }}', {# identifier #}
                     '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(source.loaded_at_field) }}', {# loaded_at_field #}
                     parse_json('{{ tojson(source.freshness) }}'), {# freshness #}
-                    {{ source_rowcount }} {# source_rowcount #}
+                    {{ 0 if source_rowcount is none else source_rowcount }} {# source_rowcount #}
                 )
                 {%- if not loop.last %},{%- endif %}
             {%- endfor %}
