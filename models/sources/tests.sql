@@ -19,6 +19,8 @@ select
     cast(null as {{ type_string() }}) as test_path,
     cast(null as {{ type_array() }}) as tags,
     cast(null as {{ type_json() }}) as test_metadata,
-    cast(null as {{ type_string() }}) as description
+    cast(null as {{ type_string() }}) as description,
+    cast(null as {{ type_string() }}) as column_name,
+    cast(null as {{ type_string() }}) as attached_node
 from dummy_cte
 where 1 = 0

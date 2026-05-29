@@ -24,3 +24,7 @@ dbt_observability:
       description: '{{ doc("tags") }}'
     - name: test_metadata
       description: ''
+    - name: column_name
+      description: The column the test is attached to in the schema yml, when the test is defined under a column. Null for model-level and singular tests.
+    - name: attached_node
+      description: The node_id of the model, source, seed, or snapshot the test is attached to. Available on dbt 1.6+; null otherwise.

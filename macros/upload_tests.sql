@@ -25,7 +25,9 @@
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(7) }},
             {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(8)) }},
             {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(9)) }},
-            {{ adapter.dispatch('column_identifier', 'dbt_observability')(10) }}
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(10) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(11) }},
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(12) }}
         from values
 
         {% endif %}
@@ -36,6 +38,8 @@
             {% else %}
                 {% set test_description = "" %}
             {% endif %}
+            {% set test_column_name = test.column_name if test.column_name else "" %}
+            {% set test_attached_node = test.attached_node if (test.attached_node is defined and test.attached_node) else "" %}
             {# Create a row for each test #}
             (
                 '{{ invocation_id }}', {# command_invocation_id #}
@@ -47,7 +51,9 @@
                 '{{ test.original_file_path | replace('\\', '\\\\') }}', {# test_path #}
                 '{{ tojson(test.tags) }}', {# tags #}
                 '{{ null if test.test_metadata is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(test.test_metadata)) }}', {# test.test_metadata #}
-                '{{ test_description }}' {# description #}
+                '{{ test_description }}', {# description #}
+                '{{ test_column_name }}', {# column_name #}
+                '{{ test_attached_node }}' {# attached_node #}
             )
             {%- if not loop.last %},{%- endif %}
         {%- endfor %}
@@ -67,6 +73,8 @@
                 {% else %}
                     {% set test_description = "" %}
                 {% endif %}
+                {% set test_column_name = test.column_name if test.column_name else "" %}
+                {% set test_attached_node = test.attached_node if (test.attached_node is defined and test.attached_node) else "" %}
                 (
                     '{{ invocation_id }}', {# command_invocation_id #}
                     '{{ test.unique_id }}', {# node_id #}
@@ -77,7 +85,9 @@
                     '{{ test.original_file_path | replace('\\', '\\\\') }}', {# test_path #}
                     {{ tojson(test.tags) }}, {# tags #}
                     parse_json('{{ tojson(test.test_metadata) }}'), {# test_metadata #}
-                    '{{ test_description }}' {# description #}
+                    '{{ test_description }}', {# description #}
+                    '{{ test_column_name }}', {# column_name #}
+                    '{{ test_attached_node }}' {# attached_node #}
                 )
                 {%- if not loop.last %},{%- endif %}
             {%- endfor %}
