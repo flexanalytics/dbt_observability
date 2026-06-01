@@ -28,3 +28,27 @@ dbt_observability:
       description: The column the test is attached to in the schema yml, when the test is defined under a column. Null for model-level and singular tests.
     - name: attached_node
       description: The node_id of the model, source, seed, or snapshot the test is attached to. Available on dbt 1.6+; null otherwise.
+    - name: test_package
+      description: Package namespace the generic test comes from (test_metadata.namespace), e.g. dbt_utils. Null for singular tests.
+    - name: test_name
+      description: Generic test type (test_metadata.name), e.g. not_null, unique, relationships. Null for singular tests.
+    - name: test_model
+      description: Raw ref()/source() expression the test is attached to (test_metadata.kwargs.model).
+    - name: test_combination_of_columns
+      description: Comma-separated columns for composite tests, e.g. unique_combination_of_columns (test_metadata.kwargs.combination_of_columns).
+    - name: test_column_value
+      description: Expected value for accepted_values-style tests (test_metadata.kwargs.value).
+    - name: test_column_min_value
+      description: Minimum bound for range tests (test_metadata.kwargs.min_value). Stored as text; cast downstream.
+    - name: test_column_max_value
+      description: Maximum bound for range tests (test_metadata.kwargs.max_value). Stored as text; cast downstream.
+    - name: test_relationship_from_model_condition
+      description: from_condition filter on a relationships test (test_metadata.kwargs.from_condition).
+    - name: test_to_model
+      description: Target model of a relationships test (test_metadata.kwargs.to / compare_model).
+    - name: test_relationship_to_field
+      description: Target field of a relationships test (test_metadata.kwargs.field).
+    - name: test_relationship_to_model_condition
+      description: to_condition filter on a relationships test (test_metadata.kwargs.to_condition).
+    - name: test_column_expression
+      description: Expression for expression-style tests (test_metadata.kwargs.expression).
