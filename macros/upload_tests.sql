@@ -93,8 +93,8 @@
                 '{{ null if test_model is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_model | string) }}', {# test_model #}
                 '{{ null if test_combination is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_combination | string) }}', {# test_combination_of_columns #}
                 '{{ null if test_column_value is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_column_value | string) }}', {# test_column_value #}
-                '{{ null if test_min_value is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_min_value | string) }}', {# test_column_min_value #}
-                '{{ null if test_max_value is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_max_value | string) }}', {# test_column_max_value #}
+                {{ "'" ~ test_min_value ~ "'" if test_min_value is not none else 'null' }}, {# test_column_min_value -- bare null (not blank) so it casts cleanly downstream #}
+                {{ "'" ~ test_max_value ~ "'" if test_max_value is not none else 'null' }}, {# test_column_max_value -- bare null (not blank) so it casts cleanly downstream #}
                 '{{ null if test_from_condition is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_from_condition | string) }}', {# test_relationship_from_model_condition #}
                 '{{ null if test_to_model is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_to_model | string) }}', {# test_to_model #}
                 '{{ null if test_to_field is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_to_field | string) }}', {# test_relationship_to_field #}
@@ -161,8 +161,8 @@
                     '{{ null if test_model is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_model | string) }}', {# test_model #}
                     '{{ null if test_combination is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_combination | string) }}', {# test_combination_of_columns #}
                     '{{ null if test_column_value is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_column_value | string) }}', {# test_column_value #}
-                    '{{ null if test_min_value is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_min_value | string) }}', {# test_column_min_value #}
-                    '{{ null if test_max_value is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_max_value | string) }}', {# test_column_max_value #}
+                    {{ "'" ~ test_min_value ~ "'" if test_min_value is not none else 'null' }}, {# test_column_min_value -- bare null (not blank) so it casts cleanly downstream #}
+                    {{ "'" ~ test_max_value ~ "'" if test_max_value is not none else 'null' }}, {# test_column_max_value -- bare null (not blank) so it casts cleanly downstream #}
                     '{{ null if test_from_condition is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_from_condition | string) }}', {# test_relationship_from_model_condition #}
                     '{{ null if test_to_model is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_to_model | string) }}', {# test_to_model #}
                     '{{ null if test_to_field is none else adapter.dispatch('escape_singlequote', 'dbt_observability')(test_to_field | string) }}', {# test_relationship_to_field #}
