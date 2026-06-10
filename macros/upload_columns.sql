@@ -166,8 +166,8 @@
         (
             '{{ invocation_id }}' {# command_invocation_id #}
             , '{{ column.model.unique_id }}' {# node_id #}
-            , '{{ column.name }}' {# column_name #}
-            , '{{ column.data_type }}' {# data_type #}
+            , '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(column.name) }}' {# column_name #}
+            , '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(column.data_type) }}' {# data_type #}
             {% set column_meta = adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(column.meta)) %}
             {% if target.type == 'bigquery' %}
             , {{ '[]' if column.tags is not defined else tojson(column.tags) }} {# tags #}
@@ -189,7 +189,8 @@
             , {{ (results and results.columns[column.name ~ '_sum'] and results.columns[column.name ~ '_sum'].values()[0]) or 'null' }} {# row_sum #}
             , {{ (results and results.columns[column.name ~ '_stdev'] and results.columns[column.name ~ '_stdev'].values()[0]) or 'null' }} {# row_stdev #}
             , '{{ "Y" if isMetric else "N" }}' {# is_metric #}
-            , '{{ (results and results.columns[column.name ~ '_values'] and results.columns[column.name ~ '_values'].values()[0]) or null }}' {# column_values #}
+            {% set _colvals = (results and results.columns[column.name ~ '_values'] and results.columns[column.name ~ '_values'].values()[0]) or null %}
+            , '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(_colvals) if _colvals else null }}' {# column_values #}
         )
         {%- if not loop.last %},{%- endif %}
     {% endfor %}
