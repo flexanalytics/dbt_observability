@@ -59,9 +59,9 @@
 
             (
                 '{{ invocation_id }}',
-                'source.{{ column.source_name }}.{{ column.package_name }}.{{ column.table_name }}',
-                '{{ column.name }}',
-                '{{ column.data_type }}',
+                'source.{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(column.source_name) }}.{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(column.package_name) }}.{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(column.table_name) }}',
+                '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(column.name) }}',
+                '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(column.data_type) }}',
                 null,
                 null,
                 null,
