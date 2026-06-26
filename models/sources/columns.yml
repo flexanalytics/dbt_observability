@@ -1,57 +1,64 @@
 version: 2
-dbt_observability:
-  models:
+models:
   - name: columns
-    meta:
-      label: Columns
+    config:
+      meta:
+        label: Columns
     columns:
-    - name: command_invocation_id
-      description: ''
-      meta:
-        label: Command Invocation Id
-    - name: node_id
-      description: ''
-      meta:
-        label: Node Id
-    - name: column_name
-      description: ''
-      meta:
-        label: Column Name
-    - name: data_type
-      description: ''
-      meta:
-        label: Data Type
-    - name: tags
-      description: ''
-      meta:
-        label: Tags
-    - name: meta
-      description: ''
-      meta:
-        label: Meta
-    - name: description
-      description: ''
-      meta:
-        label: Description
-    - name: is_documented
-      description: ''
-    - name: row_count
-      description: ''
-    - name: row_distinct
-      description: ''
-    - name: row_null
-      description: ''
-    - name: row_min
-      description: ''
-    - name: row_max
-      description: ''
-    - name: row_avg
-      description: ''
-    - name: row_sum
-      description: ''
-    - name: row_stdev
-      description: ''
-    - name: is_metric
-      description: ''
-    - name: column_values
+      - name: command_invocation_id
+        description: ''
+        config:
+          meta:
+            label: Command Invocation Id
+      - name: node_id
+        description: ''
+        config:
+          meta:
+            label: Node Id
+      - name: column_name
+        description: ''
+        config:
+          meta:
+            label: Column Name
+      - name: data_type
+        description: ''
+        config:
+          meta:
+            label: Data Type
+      - name: tags
+        description: ''
+        config:
+          meta:
+            label: Tags
+      - name: meta
+        description: ''
+        config:
+          meta:
+            label: Meta
+      - name: description
+        description: ''
+        config:
+          meta:
+            label: Description
+      - name: is_documented
+        description: ''
+      - name: row_count
+        description: ''
+      - name: row_distinct
+        description: ''
+      - name: row_null
+        description: ''
+      - name: row_min
+        description: ''
+      - name: row_max
+        description: ''
+      - name: row_avg
+        description: ''
+      - name: row_sum
+        description: ''
+      - name: row_stdev
+        description: ''
+      - name: is_metric
+        description: ''
+      - name: column_values
     description: ''
