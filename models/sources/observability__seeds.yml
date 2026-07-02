@@ -1,7 +1,7 @@
 version: 2
 models:
-  - name: snapshots
-    description: Dimension model that contains data about snapshots.
+  - name: observability__seeds
+    description: Dimension model that contains data about seeds.
     columns:
       - name: command_invocation_id
         description: '{{ doc("command_invocation_id") }}'
@@ -15,13 +15,9 @@ models:
         description: '{{ doc("schema_name") }}'
       - name: name
         description: '{{ doc("name") }}'
-      - name: depends_on_nodes
-        description: '{{ doc("depends_on_nodes") }}'
       - name: package_name
         description: '{{ doc("package_name") }}'
       - name: path
         description: '{{ doc("path") }}'
       - name: checksum
         description: '{{ doc("checksum") }}'
-      - name: strategy
-        description: '{{ doc("strategy") }}'

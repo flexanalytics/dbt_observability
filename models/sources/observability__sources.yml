@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: sources
+  - name: observability__sources
     description: Dimension model that contains data about sources.
     columns:
       - name: command_invocation_id

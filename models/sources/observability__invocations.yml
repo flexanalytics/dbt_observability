@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: invocations
+  - name: observability__invocations
     description: ''
     columns:
       - name: command_invocation_id

@@ -38,7 +38,7 @@
         {{ dbt_observability.log_observability() }}
 
         {% do log("Uploading invocations", true) %}
-        {% set invocations = dbt_observability.get_relation('invocations') %}
+        {% set invocations = dbt_observability.get_relation('observability__invocations') %}
         {% set content_invocations = dbt_observability.upload_invocations() %}
         {{ dbt_observability.insert_into_metadata_table(
             database_name=invocations.database,
@@ -51,7 +51,7 @@
         {% if results != [] %}
 
             {% do log("Uploading all executions", true) %}
-            {% set all_executions = dbt_observability.get_relation('all_executions') %}
+            {% set all_executions = dbt_observability.get_relation('observability__all_executions') %}
             {% set content_all_executions = dbt_observability.upload_all_executions(results) %}
             {{ dbt_observability.insert_into_metadata_table(
                 database_name=all_executions.database,
@@ -64,7 +64,7 @@
         {% endif %}
 
         {% do log("Uploading models", true) %}
-        {% set model_table = dbt_observability.get_relation('models') %}
+        {% set model_table = dbt_observability.get_relation('observability__models') %}
         {% set models_list = dbt_observability.get_models_list(graph, path, materialization) %}
         {% for i in range(0, models_list | length, upload_limit) %}
             {% set content_models = dbt_observability.upload_models(graph, path, materialization, models=models_list[i: i + upload_limit]) %}
@@ -77,7 +77,7 @@
         {% endfor %}
 
         {% do log("Uploading model columns", true) %}
-        {% set column_table = dbt_observability.get_relation('columns') %}
+        {% set column_table = dbt_observability.get_relation('observability__columns') %}
         {% set columns = dbt_observability.get_columns_content(graph, 'model') %}
         {% for i in range(0, columns | length, upload_limit) %}
             {% set content_columns = dbt_observability.upload_columns(columns[i: i + upload_limit], path, materialization) %}
@@ -90,7 +90,7 @@
         {% endfor %}
 
         {% do log("Uploading source columns", true) %}
-        {% set source_column_table = dbt_observability.get_relation('columns') %}
+        {% set source_column_table = dbt_observability.get_relation('observability__columns') %}
         {% set columns = dbt_observability.get_columns_content(graph, 'source') %}
         {% for i in range(0, columns | length, upload_limit) %}
             {% set content_sources = dbt_observability.upload_source_schema(graph, columns[i: i + upload_limit]) %}
@@ -103,7 +103,7 @@
         {% endfor %}
 
         {# {% do log("Uploading metrics", true) %}
-        {% set metrics = dbt_observability.get_relation('metrics') %}
+        {% set metrics = dbt_observability.get_relation('observability__metrics') %}
         {% set content_metrics = dbt_observability.upload_metrics(graph) %}
         {{ dbt_observability.insert_into_metadata_table(
             database_name=metrics.database,
@@ -114,7 +114,7 @@
         }} #}
 
         {% do log("Uploading exposures", true) %}
-        {% set exposures = dbt_observability.get_relation('exposures') %}
+        {% set exposures = dbt_observability.get_relation('observability__exposures') %}
         {% set content_exposures = dbt_observability.upload_exposures(graph) %}
         {{ dbt_observability.insert_into_metadata_table(
             database_name=exposures.database,
@@ -125,7 +125,7 @@
         }}
 
         {% do log("Uploading tests", true) %}
-        {% set tests = dbt_observability.get_relation('tests') %}
+        {% set tests = dbt_observability.get_relation('observability__tests') %}
         {% set content_tests = dbt_observability.upload_tests(graph) %}
         {{ dbt_observability.insert_into_metadata_table(
             database_name=tests.database,
@@ -136,7 +136,7 @@
         }}
 
         {% do log("Uploading seeds", true) %}
-        {% set seeds = dbt_observability.get_relation('seeds') %}
+        {% set seeds = dbt_observability.get_relation('observability__seeds') %}
         {% set content_seeds = dbt_observability.upload_seeds(graph) %}
         {{ dbt_observability.insert_into_metadata_table(
             database_name=seeds.database,
@@ -147,7 +147,7 @@
         }}
 
         {% do log("Uploading sources", true) %}
-        {% set sources = dbt_observability.get_relation('sources') %}
+        {% set sources = dbt_observability.get_relation('observability__sources') %}
         {% set content_sources = dbt_observability.upload_sources(graph) %}
         {{ dbt_observability.insert_into_metadata_table(
             database_name=sources.database,
@@ -158,7 +158,7 @@
         }}
 
         {% do log("Uploading snapshots", true) %}
-        {% set snapshots = dbt_observability.get_relation('snapshots') %}
+        {% set snapshots = dbt_observability.get_relation('observability__snapshots') %}
         {% set content_snapshots = dbt_observability.upload_snapshots(graph) %}
         {{ dbt_observability.insert_into_metadata_table(
             database_name=snapshots.database,

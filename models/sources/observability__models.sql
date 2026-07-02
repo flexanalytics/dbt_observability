@@ -1,6 +1,7 @@
 /* Bigquery won't let us `where` without `from` so we use this workaround */
 {{
     config(
+        alias='models',
         enabled=var('dbt_observability:tracking_enabled', true)
     )
 }}
@@ -20,6 +21,10 @@ select
     cast(null as {{ type_string() }}) as package_name,
     cast(null as {{ type_string() }}) as path,
     cast(null as {{ type_string() }}) as checksum,
-    cast(null as {{ type_string() }}) as strategy
+    cast(null as {{ type_string() }}) as materialization,
+    cast(null as {{ type_array() }}) as tags,
+    cast(null as {{ type_json() }}) as meta,
+    cast(null as {{ type_string() }}) as description,
+    cast(null as {{ type_int() }}) as total_rowcount
 from dummy_cte
 where 1 = 0

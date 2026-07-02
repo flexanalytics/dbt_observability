@@ -1,7 +1,7 @@
 version: 2
 models:
-  - name: models
-    description: Dimension that contains data about models.
+  - name: observability__snapshots
+    description: Dimension model that contains data about snapshots.
     columns:
       - name: command_invocation_id
         description: '{{ doc("command_invocation_id") }}'
@@ -23,16 +23,5 @@ models:
         description: '{{ doc("path") }}'
       - name: checksum
         description: '{{ doc("checksum") }}'
-      - name: materialization
-        description: '{{ doc("materialization") }}'
-      - name: tags
-        description: '{{ doc("tags") }}'
-      - name: meta
-        description: '{{ doc("meta") }}'
-      - name: description
-        description: ''
-        config:
-          meta:
-            label: Description
-      - name: total_rowcount
-        description: 'Total rowcount for the model'
+      - name: strategy
+        description: '{{ doc("strategy") }}'

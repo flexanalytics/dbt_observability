@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: all_executions
+  - name: observability__all_executions
     description: Contains data about all resource executions.
     columns:
       - name: command_invocation_id
