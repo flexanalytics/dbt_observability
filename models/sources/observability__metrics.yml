@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: metrics
+  - name: observability__metrics
     description: ''
     columns:
       - name: command_invocation_id

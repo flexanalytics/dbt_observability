@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: tests
+  - name: observability__tests
     description: Dimension model that contains data about tests.
     columns:
       - name: command_invocation_id

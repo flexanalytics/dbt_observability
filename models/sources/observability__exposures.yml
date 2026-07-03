@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: exposures
+  - name: observability__exposures
     description: Dimension model that contains data about exposures.
     columns:
       - name: command_invocation_id

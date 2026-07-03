@@ -1,6 +1,7 @@
 /* Bigquery won't let us `where` without `from` so we use this workaround */
 {{
     config(
+        alias='metrics',
         enabled=var('dbt_observability:tracking_enabled', true)
     )
 }}

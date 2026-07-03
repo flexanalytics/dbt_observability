@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: columns
+  - name: observability__columns
     config:
       meta:
         label: Columns
