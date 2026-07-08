@@ -36,3 +36,5 @@ models:
             label: Description
       - name: total_rowcount
         description: 'Total rowcount for the model'
+      - name: config
+        description: 'The full resolved config of the node, serialized as JSON.'

@@ -68,7 +68,8 @@
             {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(12)) }},
             {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(13)) }},
             {{ adapter.dispatch('column_identifier', 'dbt_observability')(14) }},
-            {{ adapter.dispatch('column_identifier', 'dbt_observability')(15) }}
+            {{ adapter.dispatch('column_identifier', 'dbt_observability')(15) }},
+            {{ adapter.dispatch('parse_json', 'dbt_observability')(adapter.dispatch('column_identifier', 'dbt_observability')(16)) }}
         from values
 
         {% endif %}
@@ -124,7 +125,8 @@
                 '{{ tojson(model.tags) }}', {# tags #}
                 '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(model.config.meta)) }}', {# meta #}
                 '{{ null if model.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(model.description) }}', {# description #}
-                {{ 0 if model_rowcount is none else model_rowcount }}
+                {{ 0 if model_rowcount is none else model_rowcount }}, {# total rowcount #}
+                '{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(model.config)) }}' {# config #}
             )
             {%- if not loop.last %},{%- endif %}
         {%- endfor %}
@@ -181,7 +183,8 @@
                     {{ tojson(model.tags) }}, {# tags #}
                     parse_json('{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(model.config.meta)) }}'), {# meta #}
                     '{{ null if model.description is not defined else adapter.dispatch('escape_singlequote', 'dbt_observability')(model.description) }}', {# description #}
-                    {{ 0 if model_rowcount is none else model_rowcount }} {# total rowcount #}
+                    {{ 0 if model_rowcount is none else model_rowcount }}, {# total rowcount #}
+                    parse_json('{{ adapter.dispatch('escape_singlequote', 'dbt_observability')(tojson(model.config)) }}') {# config #}
                 )
                 {%- if not loop.last %},{%- endif %}
             {%- endfor %}

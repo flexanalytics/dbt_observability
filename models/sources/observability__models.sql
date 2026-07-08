@@ -25,6 +25,7 @@ select
     cast(null as {{ type_array() }}) as tags,
     cast(null as {{ type_json() }}) as meta,
     cast(null as {{ type_string() }}) as description,
-    cast(null as {{ type_int() }}) as total_rowcount
+    cast(null as {{ type_int() }}) as total_rowcount,
+    cast(null as {{ type_json() }}) as config
 from dummy_cte
 where 1 = 0
